@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <SurfaceView
+        android:id="@+id/output"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
+
+    <TextView
+        android:id="@+id/start"
+        android:text="start rec"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center"
+        />
+    <TextView
+        android:id="@+id/end"
+        android:text="stop rec"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        />
+    <TextView
+        android:id="@+id/swap"
+        android:text="swap"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        />
+</LinearLayout>
