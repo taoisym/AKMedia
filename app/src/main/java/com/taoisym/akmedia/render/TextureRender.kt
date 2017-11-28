@@ -8,10 +8,23 @@ import com.taoisym.akmedia.render.egl.IGLNode
 class TextureRender : IGLNode {
     private lateinit var program: GLProgram
     internal var clear = FloatArray(4)
+
+    var shapeId = 0
+    var texId = 0
+    var trShape: Int = 0
+    var trTex: Int = 0
+
+    var texActive: Int = 0
+
+
     val id by lazy { program.id }
 
     constructor(oes: Boolean) {
         program = GLProgram(VS, if (oes) FS_OES else FS)
+        clear = floatArrayOf(0f, 0f, 0f, 1f)
+    }
+    constructor(vs:String,fs:String) {
+        program = GLProgram(vs,fs)
         clear = floatArrayOf(0f, 0f, 0f, 1f)
     }
 
@@ -33,7 +46,14 @@ class TextureRender : IGLNode {
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLES20.glClearColor(clear[0], clear[1], clear[2], clear[3])
         program.prepare(env)
-
+        GLES20.glUseProgram(0)
+        program.using(true)
+        shapeId = android.opengl.GLES20.glGetAttribLocation(id, "draw_shape")
+        texId = android.opengl.GLES20.glGetAttribLocation(id, "texture_vertex")
+        trShape = GLES20.glGetUniformLocation(id, "tr_shape")
+        trTex = GLES20.glGetUniformLocation(id, "tr_texture")
+        texActive = GLES20.glGetUniformLocation(id, "texture_0")
+        program.using(false)
     }
 
     override fun using(use: Boolean) {

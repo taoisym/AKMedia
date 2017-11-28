@@ -29,7 +29,7 @@ public class YUVUploader {
 //    GLFbo fbo;
 //
 //    public YUVUploader(MediaFormat mediaFormat) throws IOException {
-//        super(new File("file:///android_assets/yuvtexture.fs"), new File("file:///android_assets/mapping.vs"));
+//        super(new File("file:///android_assets/yuvtexture.fs"), new File("file:///android_assets/mapping.vs_shader"));
 //
 //        int width = mediaFormat.getInteger(MediaFormat.KEY_WIDTH);
 //        int height = mediaFormat.getInteger(MediaFormat.KEY_HEIGHT);

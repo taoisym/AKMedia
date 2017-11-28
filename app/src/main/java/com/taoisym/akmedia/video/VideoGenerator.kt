@@ -2,7 +2,6 @@ package com.taoisym.akmedia.video
 
 import android.graphics.SurfaceTexture
 import android.opengl.GLES20
-import android.opengl.Matrix
 import android.os.Handler
 import android.os.HandlerThread
 import com.taoisym.akmedia.codec.IMediaSource
@@ -10,14 +9,12 @@ import com.taoisym.akmedia.codec.IMediaTargetSink
 import com.taoisym.akmedia.codec.SegmentFormat
 import com.taoisym.akmedia.drawable.ExternalDrawable
 import com.taoisym.akmedia.drawable.TextureDrawable
-import com.taoisym.akmedia.layout.Loc
 import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.render.egl.GLContext
 import com.taoisym.akmedia.render.egl.GLEnv
 import com.taoisym.akmedia.render.egl.GLFbo
 import com.taoisym.akmedia.render.egl.GLToolkit
 import com.taoisym.akmedia.std.Supplier
-import glm.vec2.Vec2
 
 
 /**
@@ -29,16 +26,14 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
 
     private lateinit var mSrcDrawable: ExternalDrawable
     private lateinit var mCahceDrawable: TextureDrawable
+    private lateinit var mFilterDrawable: TextureDrawable
     private var mInputTarget = Supplier<SurfaceTexture>()
 
     private lateinit var mCacheFbo: GLFbo
-    protected lateinit var mOesRender: TextureRender
-    protected lateinit var mNOesRender: TextureRender
-    //private lateinit var mCacheTexture: GLTexture
-    private var mSrcMtx = FloatArray(16)
-    private var mTxtMtx = FloatArray(16)
-    private var mRotate = FloatArray(16)
-
+    private lateinit var mFilterFbo: GLFbo
+    private lateinit var mOesRender: TextureRender
+    private lateinit var mTexRender: TextureRender
+    private lateinit var mFilterRender: TextureRender
     private var mEglThread: HandlerThread? = null
     private var mGLHanlde: Handler? = null
     protected lateinit var mEnv: GLEnv
@@ -54,13 +49,20 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
 
     private fun releaseInGL(context: GLEnv) {
         mOesRender.release(context)
-        mNOesRender.release(context)
+        mTexRender.release(context)
+        mFilterRender.release(context)
         mSrcDrawable.release(context)
         mSubOutput?.release()
         mMainOutput.release()
         mEnv.release()
     }
 
+    fun changeRender(render: TextureRender) {
+        runGLThread {
+            render.prepare(mEnv)
+            this.mFilterRender = render
+        }
+    }
 
     private fun prepareInGL(env: GLEnv, format: SegmentFormat) {
         mEnv = env
@@ -73,34 +75,45 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
 
         val eglContext = GLToolkit.eglSetup(null, true)
         env.context = eglContext
-        val res=ResourceUploader(mGLHanlde!!)
-        env.glres=res
+        val res = ResourceUploader(mGLHanlde!!)
+        env.glres = res
 
         mMainOutput = OutputNode(next).init(eglContext)
         mMainOutput.makeCurrent()
 
-        GLES20.glEnable( GLES20.GL_BLEND )
-        GLES20.glBlendFunc( GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
+        GLES20.glEnable(GLES20.GL_BLEND)
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
 
         mOesRender = TextureRender(true)
-        mNOesRender = TextureRender(false)
+        mTexRender = TextureRender(false)
+        mFilterRender = TextureRender(false)
 
         env.oes = mOesRender
-        env.noes = mNOesRender
+        env.tex = mTexRender
 
         mOesRender.prepare(env)
-        mNOesRender.prepare(env)
-        mCahceDrawable = TextureDrawable(false, format.width, format.height)
-        mCahceDrawable.locTex.mirror=false
+        mTexRender.prepare(env)
+        mFilterRender.prepare(env)
 
         mSrcDrawable = ExternalDrawable(format.width, format.height)
-        mSrcDrawable.locTex.rotation=format.rotation
-        mCahceDrawable.prepare(env)
-        mSrcDrawable.prepare(env)
+        mSrcDrawable.locTex.rotation = format.rotation
 
+        mCahceDrawable = TextureDrawable(false, format.width, format.height)
+        mCahceDrawable.locTex.mirror = false
+
+        mFilterDrawable = TextureDrawable(false, format.width, format.height)
+        mFilterDrawable.locTex.mirror = false
+
+
+        mSrcDrawable.prepare(env)
+        mCahceDrawable.prepare(env)
+        mFilterDrawable.prepare(env)
 
         mCacheFbo = GLFbo(mCahceDrawable.texture)
         mCacheFbo.prepare(env)
+
+        mFilterFbo = GLFbo(mFilterDrawable.texture)
+        mFilterFbo.prepare(env)
 
         mInputTarget.set(mSrcDrawable.input)
         mSrcDrawable.input?.setOnFrameAvailableListener {
@@ -112,6 +125,8 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
     private fun eglDrawFrame() {
 
         drawCache()
+        //filter
+        drawFilter()
         val time = mSrcDrawable.input?.timestamp ?: 0
         mMainOutput.apply {
             swapdraw(time)
@@ -124,25 +139,20 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
 
     fun drawCache() {
         mMainOutput.makeCurrent()
-
-
         mCacheFbo.using(true)
         mOesRender.clearColor(floatArrayOf(1.0f, 1f, 1f, 1f))
         GLES20.glViewport(0, 0, format.width, format.height)
-        if (format.rotation != 0) {
-            //mInputSurfaceTexture.getTransformMatrix(mSrcMtx)
-            Matrix.multiplyMM(mTxtMtx, 0, mSrcMtx, 0, mRotate, 0)
-            //mSrcDrawable.mtx_texture= Mat4(mRotate)*Mat4(mSrcMtx)//.rotate(PI.toFloat()/2*3,0f,0f,-1f)
-            //.translate(0.5f,0.5f,0f)
-            //.rotate(90f,0f,0f,1f)*Mat4(mSrcMtx)
-            //.translate(-0.5f,-0.5f,0f)
-            mSrcDrawable.draw(mEnv)
-        } else {
-            mSrcDrawable.draw(mEnv)
-        }
-//        Thread.sleep(30)
+        mSrcDrawable.draw(mEnv, mOesRender)
         drawDecorate()
         mCacheFbo.using(false)
+
+    }
+
+    private fun drawFilter() {
+        mFilterFbo.using(true)
+        GLES20.glViewport(0, 0, format.width, format.height)
+        mCahceDrawable.draw(mEnv, mFilterRender)
+        mFilterFbo.using(false)
     }
 
     open fun drawDecorate() {
@@ -151,10 +161,6 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
 
 
     override fun prepare() {
-        Matrix.setIdentityM(mRotate, 0)
-        Matrix.translateM(mRotate, 0, 0.5f, 0.5f, 0f)
-        Matrix.rotateM(mRotate, 0, 90f, 0f, 0f, 1f)
-        Matrix.translateM(mRotate, 0, -0.5f, -0.5f, 0f)
     }
 
     override fun setFormat(ctx: Any, format: SegmentFormat): Any? {
@@ -248,7 +254,7 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
             mSurfaceCanvans.makeCurrent()
             GLToolkit.checkError()
             GLES20.glViewport(0, 0, mSurface.width, mSurface.height)
-            mCahceDrawable.draw(mEnv)
+            mFilterDrawable.draw(mEnv, mTexRender)
             mSurfaceCanvans.setPresentationTime(timestamp - mPtsStart)
             mSurfaceCanvans.swap()
             next.scatter(Unit)

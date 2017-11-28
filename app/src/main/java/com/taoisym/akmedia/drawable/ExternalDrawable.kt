@@ -1,6 +1,7 @@
 package com.taoisym.akmedia.drawable
 
 import android.graphics.SurfaceTexture
+import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.render.egl.GLEnv
 
 open class ExternalDrawable(width: Int, height: Int) : TextureDrawable(true, width, height) {
@@ -17,10 +18,10 @@ open class ExternalDrawable(width: Int, height: Int) : TextureDrawable(true, wid
         }
     }
 
-    override fun draw(env: GLEnv) {
+    override fun draw(env: GLEnv,render: TextureRender?) {
         input?.run {
             updateTexImage()
-            super.draw(env)
+            super.draw(env,render)
         }
     }
 

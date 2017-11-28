@@ -9,7 +9,7 @@ import com.taoisym.akmedia.video.ResourceUploader
 class GLEnv {
     lateinit var context: GLContext
     lateinit var oes: TextureRender
-    lateinit var noes: TextureRender
+    lateinit var tex: TextureRender
 
     var glres:ResourceUploader?=null
     fun release() {

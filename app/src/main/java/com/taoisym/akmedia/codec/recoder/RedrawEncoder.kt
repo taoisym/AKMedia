@@ -243,7 +243,8 @@ class RedrawEncoder : IMediaSink<PresentSegment>, IMediaSource<NioSegment, Unit>
                 Matrix.multiplyMM(tr_final, 0, frame.tr_texture, 0, tr_texture, 0)
                 view?.apply {
                     mtxShape.put(tr_final)
-                    draw(env!!)
+                    //todo!!!
+                    draw(env!!,null as TextureRender)
                 }
                 out!!.setPresentationTime(time)
                 out!!.swap()

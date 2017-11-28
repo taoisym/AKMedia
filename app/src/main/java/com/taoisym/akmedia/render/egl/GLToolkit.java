@@ -71,7 +71,7 @@ public class GLToolkit {
     public static void checkError() {
         int error = GLES20.glGetError();
         if (error != GLES20.GL_NO_ERROR) {
-            String e = "error:" + GLES20.glGetString(error);
+            String e = "error:"+error + GLES20.glGetString(error);
             Log.e("GLE", e);
             throw new RuntimeException(e);
         }

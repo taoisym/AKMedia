@@ -7,8 +7,9 @@ import com.taoisym.akmedia.R
 import com.taoisym.akmedia.camera.CompactCamera
 import com.taoisym.akmedia.std.Supplier
 import com.taoisym.akmedia.video.RealSurface
-import kotlinx.android.synthetic.main.activity_main.*
+
 import java.util.concurrent.Executors
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     val camera = CompactCamera()
@@ -21,6 +22,9 @@ class MainActivity : AppCompatActivity() {
         start.setOnClickListener { test.start(this) }
         end.setOnClickListener { test.stop() }
         output.setOnClickListener { camera.focus { } }
+        filter.setOnClickListener{
+            test.change(this)
+        }
         FileCopy.copyAssets(this.assets)
     }
 

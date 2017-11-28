@@ -8,6 +8,7 @@ import com.taoisym.akmedia.drawable.BitmapDrawable
 import com.taoisym.akmedia.drawable.GifDrawable
 import com.taoisym.akmedia.drawable.VideoDrawable
 import com.taoisym.akmedia.layout.Loc
+import com.taoisym.akmedia.render.TextureRender
 import glm.vec2.Vec2
 
 
@@ -49,9 +50,9 @@ class VideoDecorate(next: IMediaTargetSink<Unit, RealSurface>) : VideoGenerator(
 
     override fun drawDecorate() {
         super.drawDecorate()
-        drawable?.draw(mEnv)
-        bmp?.draw(mEnv)
-        bmp1?.draw(mEnv)
-        gif?.draw(mEnv)
+        drawable?.draw(mEnv,null)
+        bmp?.draw(mEnv,null)
+        bmp1?.draw(mEnv,null)
+        gif?.draw(mEnv,null)
     }
 }

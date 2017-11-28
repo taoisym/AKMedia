@@ -1,16 +1,20 @@
 package com.taoisym.akmedia.ui
 
 import android.content.Context
+import com.taoisym.akmedia.R
 import com.taoisym.akmedia.camera.AkCamera
 import com.taoisym.akmedia.codec.SegmentFormat
 import com.taoisym.akmedia.codec.avc.MediaMuxer
 import com.taoisym.akmedia.codec.avc.MediaWriter
+import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.render.egl.GLEnv
 import com.taoisym.akmedia.std.Supplier
 import com.taoisym.akmedia.video.FileTarget
 import com.taoisym.akmedia.video.RealSurface
 import com.taoisym.akmedia.video.SurfaceTarget
 import com.taoisym.akmedia.video.VideoDecorate
+import java.io.File
+import java.io.FileInputStream
 
 
 class CamTest {
@@ -41,6 +45,7 @@ class CamTest {
             vg?.add(ctx)
         }
 
+
     }
 
     fun stop() {
@@ -50,5 +55,11 @@ class CamTest {
         }
 
         mp4 = null
+    }
+
+    fun change(ctx: Context) {
+        val vs = String(ctx.assets.open("shader/vs_shader.glsl").readBytes())
+        val fs = String(ctx.assets.open("shader/fs_no_oes.glsl").readBytes())
+        vg?.changeRender(TextureRender(vs, fs))
     }
 }

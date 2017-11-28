@@ -24,7 +24,6 @@ class Loc {
         corner1 = Vec4(1, 1, 0f, 1f)
     }
 
-
     private var changed = true
     var mirror: Boolean = false
     var rotation: Int=0
@@ -58,8 +57,6 @@ class Loc {
                 loc.put(b.y)
                 loc.put(b.x)
                 loc.put(a.y)
-
-
             }else{
                 loc.put(a.x)
                 loc.put(b.y)
