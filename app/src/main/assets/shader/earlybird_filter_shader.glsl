@@ -1,7 +1,8 @@
 precision mediump float; 
-uniform sampler2D u_Texture0; 
-uniform sampler2D u_Texture1;
-varying vec2 v_TexCoordinate; 
+uniform sampler2D texture_0;
+uniform sampler2D texture_1;
+varying vec2 sampler_vertex; 
+
 const vec3 W = vec3(0.2125, 0.7154, 0.0721);
 
 vec3 BrightnessContrastSaturation(vec3 color, float brt, float con, float sat)
@@ -44,9 +45,9 @@ vec3 multiplyBlender(vec3 Color, vec3 f){
 void main()
 {
 	 //get the pixel
-     vec2 st = v_TexCoordinate.st;
-     vec3 irgb = texture2D(u_Texture0, st).rgb;
-     vec3 f = texture2D(u_Texture1, st).rgb;
+     vec2 st = sampler_vertex.st;
+     vec3 irgb = texture2D(texture_0, st).rgb;
+     vec3 f = texture2D(texture_1, st).rgb;
      
      //adjust the brightness/contrast/saturation
      float T_bright = 1.2;
