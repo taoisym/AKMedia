@@ -224,7 +224,7 @@ class RedrawEncoder : IMediaSink<PresentSegment>, IMediaSource<NioSegment, Unit>
             view?.prepare(it)
         }
 
-        val texture = SurfaceTexture(view!!.texture!!.id)
+        val texture = SurfaceTexture(view!!.texture.value!!.id)
         texture.setDefaultBufferSize(width, height)
         texture.setOnFrameAvailableListener(object : SurfaceTexture.OnFrameAvailableListener {
             internal val tr_texture = FloatArray(16)

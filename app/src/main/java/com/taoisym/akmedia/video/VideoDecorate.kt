@@ -2,6 +2,8 @@ package com.taoisym.akmedia.video
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import com.bumptech.glide.load.engine.bitmap_recycle.LruBitmapPool
+import com.bumptech.glide.load.resource.gif.GifBitmapProvider
 import com.taoisym.akmedia.R
 import com.taoisym.akmedia.codec.IMediaTargetSink
 import com.taoisym.akmedia.drawable.BitmapDrawable
@@ -20,9 +22,12 @@ class VideoDecorate(next: IMediaTargetSink<Unit, RealSurface>) : VideoGenerator(
     var bmp: BitmapDrawable? = null
     var bmp1: BitmapDrawable? = null
     var gif: GifDrawable?=null
+    var gif1: GifDrawable?=null
+    val bp= GifBitmapProvider(LruBitmapPool(6))
     fun add(ctx: Context) {
         runGLThread {
             drawable = VideoDrawable("/sdcard/girl.mp4")
+            drawable?.locShape = Loc(Vec2(0.0f, 0.0f), Vec2(1f, 1f))
             drawable?.prepare(mEnv)
             drawable?.start()
 
@@ -31,11 +36,17 @@ class VideoDecorate(next: IMediaTargetSink<Unit, RealSurface>) : VideoGenerator(
             bmp?.locShape = Loc(Vec2(-1, -1), Vec2(-0.5, -0.5))
             bmp?.prepare(mEnv)
             bmp1 = BitmapDrawable(b)
-            bmp1?.locShape = Loc(Vec2(-0.5, -0.5), Vec2(0, 0))
+            bmp1?.locShape = Loc(Vec2(-0.5, -1), Vec2(0, -0.5))
             bmp1?.prepare(mEnv)
-            gif= GifDrawable("/sdcard/gif.gif")
+            gif= GifDrawable("/sdcard/gif.gif",bp)
             gif?.locShape = Loc(Vec2(-1, -0.5), Vec2(-0.5, 0))
             gif?.prepare(mEnv)
+            gif1= GifDrawable("/sdcard/gif.gif",bp)
+            gif1?.locShape = Loc(Vec2(-0.5, -0.5), Vec2(0, 0))
+            gif1?.prepare(mEnv)
+
+            gif?.start()
+            gif1?.start()
         }
     }
 
@@ -43,8 +54,14 @@ class VideoDecorate(next: IMediaTargetSink<Unit, RealSurface>) : VideoGenerator(
         runGLThread {
             drawable?.release(mEnv)
             drawable = null
+            bmp?.release(mEnv)
+            bmp=null
+            bmp1?.release(mEnv)
+            bmp1=null
             gif?.release(mEnv)
             gif=null
+            gif1?.release(mEnv)
+            gif1=null
         }
     }
 
@@ -54,5 +71,6 @@ class VideoDecorate(next: IMediaTargetSink<Unit, RealSurface>) : VideoGenerator(
         bmp?.draw(mEnv,null)
         bmp1?.draw(mEnv,null)
         gif?.draw(mEnv,null)
+        gif1?.draw(mEnv,null)
     }
 }

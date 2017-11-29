@@ -13,9 +13,8 @@ open class ExternalDrawable(width: Int, height: Int) : TextureDrawable(true, wid
 
     override fun prepare(env: GLEnv) {
         super.prepare(env)
-        texture?.run {
-            input = SurfaceTexture(id)
-        }
+        if(texture.value!=null)
+            input = SurfaceTexture(texture.value!!.id)
     }
 
     override fun draw(env: GLEnv,render: TextureRender?) {

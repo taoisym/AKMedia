@@ -5,8 +5,8 @@ package com.taoisym.akmedia.drawable
  */
 interface PlayAble {
     fun start()
-    fun stop()
-    fun pause()
-    fun resume()
-    fun seek(pts: Long)
+    fun stop(){}
+    fun pause(){}
+    fun resume(){}
+    fun seek(pts: Long){}
 }

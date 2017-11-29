@@ -57,10 +57,11 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
         mEnv.release()
     }
 
-    fun changeRender(render: TextureRender) {
+    fun setFilter(render: TextureRender) {
         runGLThread {
             render.prepare(mEnv)
-            this.mFilterRender = render
+            mFilterRender?.release(mEnv)
+            mFilterRender = render
         }
     }
 
@@ -109,10 +110,10 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
         mCahceDrawable.prepare(env)
         mFilterDrawable.prepare(env)
 
-        mCacheFbo = GLFbo(mCahceDrawable.texture)
+        mCacheFbo = GLFbo(mCahceDrawable.texture.value)
         mCacheFbo.prepare(env)
 
-        mFilterFbo = GLFbo(mFilterDrawable.texture)
+        mFilterFbo = GLFbo(mFilterDrawable.texture.value)
         mFilterFbo.prepare(env)
 
         mInputTarget.set(mSrcDrawable.input)

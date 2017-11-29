@@ -1,5 +1,6 @@
 package com.taoisym.akmedia.drawable
 
+import android.os.ConditionVariable
 import com.bumptech.glide.gifdecoder.GifDecoder
 import com.bumptech.glide.gifdecoder.StandardGifDecoder
 import com.bumptech.glide.load.engine.bitmap_recycle.LruBitmapPool
@@ -8,11 +9,15 @@ import com.taoisym.akmedia.render.egl.GLEnv
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
+import java.util.concurrent.locks.Condition
 import kotlin.concurrent.thread
 
-class GifDrawable(val uri:String):TextureDrawable(false,0,0){
-    val decorer= StandardGifDecoder(GifBitmapProvider(LruBitmapPool(6)))
-    var thread:Thread?=null;
+class GifDrawable(val uri:String,bp:GifBitmapProvider):TextureDrawable(false,0,0),PlayAble
+{
+    val decorer= StandardGifDecoder(bp)
+    var thread:Thread?=null
+    var lock=java.lang.Object()
+    var running=false
     override fun prepare(env: GLEnv) {
         decorer.read(BufferedInputStream(FileInputStream(uri)),
                 File(uri).length().toInt())
@@ -20,7 +25,12 @@ class GifDrawable(val uri:String):TextureDrawable(false,0,0){
         height=decorer.height
         super.prepare(env)
         thread=thread {
-            while (true){
+
+            while (true) {
+                synchronized(lock) {
+                    while (running==false)
+                        lock.wait()
+                }
                 try {
                     decorer.advance()
                     var frame=decorer.nextFrame
@@ -28,7 +38,7 @@ class GifDrawable(val uri:String):TextureDrawable(false,0,0){
                         decorer.resetFrameIndex()
                     }else{
                         env.glres?.upload(Runnable {
-                            texture?.update(frame)
+                            texture.value?.update(frame)
                         })
                         Thread.sleep(decorer.nextDelay.toLong())
                     }
@@ -42,5 +52,27 @@ class GifDrawable(val uri:String):TextureDrawable(false,0,0){
     override fun release(env: GLEnv) {
         super.release(env)
         thread?.interrupt()
+    }
+
+    override fun start() {
+        synchronized(lock){
+            running=true
+            lock.notifyAll()
+        }
+    }
+
+    override fun stop() {
+        thread?.interrupt()
+    }
+
+    override fun pause() {
+        synchronized(lock){
+            running=false
+            lock.notifyAll()
+        }
+    }
+
+    override fun resume() {
+        start()
     }
 }

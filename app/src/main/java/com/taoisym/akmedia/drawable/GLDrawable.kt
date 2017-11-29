@@ -8,6 +8,8 @@ import com.taoisym.akmedia.render.egl.GLEnv
 import com.taoisym.akmedia.render.egl.GLTexture
 import com.taoisym.akmedia.render.egl.GLToolkit
 import com.taoisym.akmedia.render.egl.IGLNode
+import com.taoisym.akmedia.std.Ref
+import com.taoisym.akmedia.std.Supplier
 import glm.mat4x4.Mat4
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -15,8 +17,7 @@ import java.nio.FloatBuffer
 
 
 abstract class GLDrawable(val oes: Boolean) : IGLNode {
-    var texture: GLTexture? = null
-
+    var texture= Ref<GLTexture>(null)
     var locShape = Loc()
     var locTex = Loc(true)
     var mtxShape = Mat4()
@@ -38,19 +39,21 @@ abstract class GLDrawable(val oes: Boolean) : IGLNode {
     }
 
     override fun release(env: GLEnv) {
-        texture?.release(env)
+        texture.value?.release(env)
     }
 
     open fun draw(env: GLEnv, render: TextureRender?) {
-        if (texture == null)
+        val tex=texture.value
+        if (tex == null)
             return
+
         var used = render
         if (used == null) {
             used = if (oes) env.oes else env.tex
         }
         used.using(true)
         update(used)
-        GLES20.glBindTexture(texture!!.type, texture!!.id)
+        GLES20.glBindTexture(tex.type, tex.id)
         GLToolkit.checkError()
         //GLES20.glUniform1i(used.texActive, 0)
         GLToolkit.checkError()

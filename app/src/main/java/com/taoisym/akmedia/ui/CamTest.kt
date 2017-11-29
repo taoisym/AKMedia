@@ -60,6 +60,6 @@ class CamTest {
     fun change(ctx: Context) {
         val vs = String(ctx.assets.open("shader/vs_shader.glsl").readBytes())
         val fs = String(ctx.assets.open("shader/fs_no_oes.glsl").readBytes())
-        vg?.changeRender(TextureRender(vs, fs))
+        vg?.setFilter(TextureRender(vs, fs))
     }
 }

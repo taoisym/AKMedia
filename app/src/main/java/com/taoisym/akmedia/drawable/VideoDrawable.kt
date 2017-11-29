@@ -20,7 +20,7 @@ class VideoDrawable(val uri: String) : ExternalDrawable(0, 0), PlayAble {
         val meta = AvcFileMeta(retriever)
         width = meta.width
         height = meta.height
-        locShape = Loc(Vec2(0.0f, 0.0f), Vec2(1f, 1f))
+
         super.prepare(env)
     }
 

@@ -8,14 +8,11 @@ import com.taoisym.akmedia.render.egl.IGLNode
 class TextureRender : IGLNode {
     private lateinit var program: GLProgram
     internal var clear = FloatArray(4)
-
     var shapeId = 0
     var texId = 0
     var trShape: Int = 0
     var trTex: Int = 0
-
     var texActive: Int = 0
-
 
     val id by lazy { program.id }
 
