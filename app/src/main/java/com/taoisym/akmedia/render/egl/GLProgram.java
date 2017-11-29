@@ -20,7 +20,6 @@ public class GLProgram implements IGLNode {
     @Override
     public void using(boolean use) {
         GLToolkit.useProgram(use ? id : 0);
-        GLToolkit.checkError();
     }
 
     @Override

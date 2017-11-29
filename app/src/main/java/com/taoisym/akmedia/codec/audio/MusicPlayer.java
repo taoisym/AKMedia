@@ -5,7 +5,7 @@ import com.taoisym.akmedia.codec.avc.MediaSource;
 
 public class MusicPlayer {
 
-    PcmNioPlayer pcm = new PcmNioPlayer();
+    AacPlayer pcm = new AacPlayer();
     private MediaSource src = new MediaSource(MediaSource.Companion.getPAUSE(), MediaSource.Companion.getCONTINUE());
 
     public void prepare(String file, boolean loop) {

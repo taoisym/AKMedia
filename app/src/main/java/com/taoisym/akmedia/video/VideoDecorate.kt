@@ -31,7 +31,7 @@ class VideoDecorate(next: IMediaTargetSink<Unit, RealSurface>) : VideoGenerator(
             drawable?.prepare(mEnv)
             drawable?.start()
 
-            val b = BitmapFactory.decodeResource(ctx.resources, R.drawable.src)
+            val b = BitmapFactory.decodeResource(ctx.resources,R.raw.src)
             bmp = BitmapDrawable(b)
             bmp?.locShape = Loc(Vec2(-1, -1), Vec2(-0.5, -0.5))
             bmp?.prepare(mEnv)

@@ -53,6 +53,7 @@ abstract class GLDrawable(val oes: Boolean) : IGLNode {
         }
         used.using(true)
         update(used)
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLES20.glBindTexture(tex.type, tex.id)
         GLToolkit.checkError()
         //GLES20.glUniform1i(used.texActive, 0)

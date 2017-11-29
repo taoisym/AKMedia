@@ -8,7 +8,7 @@ import com.taoisym.akmedia.codec.chain.ByteRingBuffer
 import java.nio.ByteBuffer
 
 
-class AudioSpeed(internal var next: IMediaSink<NioSegment>, private val speed: Float) : IMediaSource<NioSegment, Unit>, IMediaSink<NioSegment> {
+class SpeedControl(internal var next: IMediaSink<NioSegment>, private val speed: Float) : IMediaSource<NioSegment, Unit>, IMediaSink<NioSegment> {
     private lateinit var memo: NioSegment
 
     private lateinit var ring: ByteRingBuffer

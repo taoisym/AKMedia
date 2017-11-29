@@ -12,7 +12,7 @@ import java.util.*
 
 
 
-class PcmNioPlayer : IMediaSink<NioSegment> {
+class AacPlayer : IMediaSink<NioSegment> {
 
     protected var track: AudioTrack? = null
     protected var mute: Boolean = false

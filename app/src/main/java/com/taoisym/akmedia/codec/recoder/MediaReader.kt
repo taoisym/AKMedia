@@ -8,7 +8,7 @@ import com.taoisym.akmedia.codec.SegmentFormat
 import java.nio.ByteBuffer
 
 
-class SegmentReader(private var next: IMediaSink<NioSegment>) : IMediaSink<NioSegment>, IMediaSource<NioSegment, Unit> {
+class MediaReader(private var next: IMediaSink<NioSegment>) : IMediaSink<NioSegment>, IMediaSource<NioSegment, Unit> {
     private lateinit var extractor: MediaExtractor
     private var buffer: ByteBuffer? = null
     private var fmt: SegmentFormat? = null

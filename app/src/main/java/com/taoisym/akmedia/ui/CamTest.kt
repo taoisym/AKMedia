@@ -1,11 +1,13 @@
 package com.taoisym.akmedia.ui
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import com.taoisym.akmedia.R
 import com.taoisym.akmedia.camera.AkCamera
 import com.taoisym.akmedia.codec.SegmentFormat
 import com.taoisym.akmedia.codec.avc.MediaMuxer
 import com.taoisym.akmedia.codec.avc.MediaWriter
+import com.taoisym.akmedia.render.FilterRender
 import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.render.egl.GLEnv
 import com.taoisym.akmedia.std.Supplier
@@ -56,10 +58,40 @@ class CamTest {
 
         mp4 = null
     }
-
+    companion object {
+        var filter=0
+    }
     fun change(ctx: Context) {
-        val vs = String(ctx.assets.open("shader/vs_shader.glsl").readBytes())
-        val fs = String(ctx.assets.open("shader/willow_filter_shader.glsl").readBytes())
-        vg?.setFilter(TextureRender(vs, fs))
+        var render:TextureRender?= null
+        when (filter){
+            0->{
+                val vs = String(ctx.assets.open("shader/vs_shader.glsl").readBytes())
+                val fs = String(ctx.assets.open("shader/fs_no_oes.glsl").readBytes())
+                render=TextureRender(vs, fs)
+            }
+            1->{
+                val vs = String(ctx.assets.open("shader/vs_shader.glsl").readBytes())
+                val fs = String(ctx.assets.open("shader/willow_filter_shader.glsl").readBytes())
+                render= TextureRender(vs, fs)
+            }
+            2->{
+                val vs = String(ctx.assets.open("shader/vs_shader.glsl").readBytes())
+                val fs = String(ctx.assets.open("shader/xpro_filter_shader.glsl").readBytes())
+                val bmp= BitmapFactory.decodeResource(ctx.resources,R.raw.filter2)
+                render=FilterRender(vs, fs,bmp)
+            }
+            3->{
+                val vs = String(ctx.assets.open("shader/vs_shader.glsl").readBytes())
+                val fs = String(ctx.assets.open("shader/toaster_filter_shader.glsl").readBytes())
+                val bmp= BitmapFactory.decodeResource(ctx.resources,R.raw.toaster)
+                render=FilterRender(vs, fs,bmp)
+            }
+        }
+        filter= filter+1
+        if(filter>=4){
+            filter=0
+        }
+
+        vg?.setFilter(render!!)
     }
 }

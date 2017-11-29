@@ -5,7 +5,7 @@ import com.taoisym.akmedia.render.egl.GLEnv
 import com.taoisym.akmedia.render.egl.GLProgram
 import com.taoisym.akmedia.render.egl.IGLNode
 
-class TextureRender : IGLNode {
+open class TextureRender : IGLNode {
     private lateinit var program: GLProgram
     internal var clear = FloatArray(4)
     var shapeId = 0

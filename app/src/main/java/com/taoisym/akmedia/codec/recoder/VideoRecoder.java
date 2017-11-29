@@ -72,7 +72,7 @@ public class VideoRecoder extends MediaConvertor {
 
         };
         MediaSource src = new MediaSource(MediaSource.Companion.getCONTINUE(), MediaSource.Companion.getSTOP());
-        src.addSink(new SegmentReader(new MediaCopier(muxer)), 1);
+        src.addSink(new MediaReader(new MediaCopier(muxer)), 1);
         src.addSink(passer, 0);
         if (in != null) {
             src.scatter(in);
