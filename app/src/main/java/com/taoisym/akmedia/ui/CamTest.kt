@@ -59,7 +59,7 @@ class CamTest {
 
     fun change(ctx: Context) {
         val vs = String(ctx.assets.open("shader/vs_shader.glsl").readBytes())
-        val fs = String(ctx.assets.open("shader/fs_no_oes.glsl").readBytes())
+        val fs = String(ctx.assets.open("shader/willow_filter_shader.glsl").readBytes())
         vg?.setFilter(TextureRender(vs, fs))
     }
 }
