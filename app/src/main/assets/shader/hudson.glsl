@@ -1,4 +1,4 @@
-precision mediump float;
+precision highp float;
 uniform sampler2D texture_0;
 uniform sampler2D texture_1;
 varying vec2 sampler_vertex; 

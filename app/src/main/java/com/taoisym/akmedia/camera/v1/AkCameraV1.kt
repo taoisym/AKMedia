@@ -2,6 +2,7 @@ package com.taoisym.akmedia.camera.v1
 
 import android.graphics.SurfaceTexture
 import android.hardware.Camera
+import android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO
 import com.taoisym.akmedia.camera.*
 import com.taoisym.akmedia.camera.common.Adapter
 import com.taoisym.akmedia.std.Reformer
@@ -88,6 +89,7 @@ class AkCameraV1 : AkCamera {
         val width = size.width
         val height = size.height
         val format = mCamera!!.parameters.previewFormat
+
         mCamera!!.setPreviewCallback { data, camera -> mPreviewCallback!!.invoke(data, width, height, format) }
 
     }
@@ -101,6 +103,7 @@ class AkCameraV1 : AkCamera {
             //apply parameter
             if (mReforer != null)
                 mCamera!!.parameters = from(mReforer!!.apply(from(mCamera!!.parameters)))
+            mCamera!!.parameters.focusMode=FOCUS_MODE_CONTINUOUS_VIDEO
             //call texture
             mTarget?.run {
                 try {

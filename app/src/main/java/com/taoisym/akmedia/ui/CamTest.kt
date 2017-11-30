@@ -22,6 +22,7 @@ class CamTest {
     private var mp4: FileTarget? = null
 
     fun test(camera: AkCamera, surface: Supplier<RealSurface>) {
+
         val context = GLEnv()
         vg = VideoDecorate(SurfaceTarget(surface))
         val size = camera.parameter.previewSize
@@ -52,9 +53,13 @@ class CamTest {
         mp4?.let {
             vg?.delSink(it)
             vg?.del()
+
         }
 
         mp4 = null
+    }
+    fun release(){
+        vg?.release()
     }
     companion object {
         var filter=0

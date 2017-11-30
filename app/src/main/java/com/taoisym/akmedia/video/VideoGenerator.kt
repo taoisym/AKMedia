@@ -203,7 +203,7 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
 
 
     override fun release() {
-        mEglThread?.quit()
+        mEglThread?.quitSafely()
     }
 
     override fun seek(pts: Long, flag: Int) = throw UnsupportedOperationException()
