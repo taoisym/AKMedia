@@ -97,7 +97,7 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
         mFilterRender.prepare(env)
 
         mSrcDrawable = ExternalDrawable(format.width, format.height)
-        mSrcDrawable.locTex.rotation = format.rotation
+        mSrcDrawable.locTex.camera=false
 
         mCahceDrawable = TextureDrawable(false, format.width, format.height)
         mCahceDrawable.locTex.mirror = false
@@ -143,6 +143,8 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
         mCacheFbo.using(true)
         mOesRender.clearColor(floatArrayOf(1.0f, 1f, 1f, 1f))
         GLES20.glViewport(0, 0, format.width, format.height)
+        val mtx = FloatArray(16)
+        mInputTarget.get().getTransformMatrix(mtx)
         mSrcDrawable.draw(mEnv, mOesRender)
         drawDecorate()
         mCacheFbo.using(false)

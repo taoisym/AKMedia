@@ -26,7 +26,7 @@ class Loc {
 
     private var changed = true
     var mirror: Boolean = false
-    var rotation: Int=0
+    var camera: Boolean?=null
     var corner0: Vec4
         set(value) {
             changed = true
@@ -48,7 +48,16 @@ class Loc {
         var b = if (tr != null) tr.translate(corner1) else corner1
         loc.position(0)
         if (mirror) {
-            if(rotation==90) {
+            if(camera==null){
+                loc.put(a.x)
+                loc.put(b.y)
+                loc.put(b.x)
+                loc.put(b.y)
+                loc.put(a.x)
+                loc.put(a.y)
+                loc.put(b.x)
+                loc.put(a.y)
+            }else if(camera==true) {
                 loc.put(a.x)
                 loc.put(b.y)
                 loc.put(a.x)
@@ -58,13 +67,13 @@ class Loc {
                 loc.put(b.x)
                 loc.put(a.y)
             }else{
-                loc.put(a.x)
-                loc.put(b.y)
                 loc.put(b.x)
                 loc.put(b.y)
-                loc.put(a.x)
+                loc.put(b.x)
                 loc.put(a.y)
-                loc.put(b.x)
+                loc.put(a.x)
+                loc.put(b.y)
+                loc.put(a.x)
                 loc.put(a.y)
             }
         } else {

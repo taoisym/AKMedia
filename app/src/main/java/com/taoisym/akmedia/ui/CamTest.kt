@@ -26,7 +26,7 @@ class CamTest {
         vg = VideoDecorate(SurfaceTarget(surface))
         val size = camera.parameter.previewSize
         val fmt = SegmentFormat(size.width, size.height, 0)
-        fmt.rotation = 90
+        fmt.rotation = 180
         vg?.prepare()
         vg?.setFormat(context, fmt)
         camera.setPreviewTexture(vg!!.target)
