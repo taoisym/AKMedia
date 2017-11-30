@@ -32,4 +32,9 @@ class FilterRender(vs:String,fs:String,val bmp:Bitmap) : TextureRender(vs,fs) {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,0)
         }
     }
+
+    override fun release(env: GLEnv) {
+        super.release(env)
+        filterTexture.value?.release(env)
+    }
 }
