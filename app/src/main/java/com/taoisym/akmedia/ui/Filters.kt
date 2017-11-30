@@ -9,15 +9,15 @@ class Filters{
     data class Shader(val fs:String,val res:Int)
     companion object {
         val buildin = arrayOf(
-                Shader("amaro.glsl", R.raw.original_ps),
-                Shader("earlybird.glsl", R.raw.original_ps),
+                Shader("amaro.glsl", R.raw.filter2),
+                Shader("earlybird.glsl", R.raw.filter2),
                 Shader("hefe.glsl", R.raw.hefe),
                 Shader("hudson.glsl", R.raw.hudson),
-                Shader("mayfair.glsl", R.raw.original_ps),
-                Shader("rise.glsl", R.raw.original_ps),
+                Shader("mayfair.glsl", R.raw.filter2),
+                Shader("rise.glsl", R.raw.filter2),
                 Shader("toaster.glsl", R.raw.toaster),
-                Shader("willow.glsl", R.raw.original_ps),
-                Shader("xpro.glsl", R.raw.original_ps),
+                Shader("willow.glsl", R.raw.filter2),
+                Shader("xpro.glsl", R.raw.filter2),
                 Shader("fs_no_oes.glsl", 0)
         )
         val size = buildin.size
