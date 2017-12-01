@@ -22,6 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:gravity="center"
+            android:textColor="@color/colorAccent"
             android:text="录制" />
 
         <TextView
@@ -29,6 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:gravity="center"
+            android:textColor="@color/colorAccent"
             android:text="停止" />
 
         <TextView
@@ -36,6 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:gravity="center"
+            android:textColor="@color/colorAccent"
             android:text="使用滤镜" />
     </LinearLayout>
 </FrameLayout>

@@ -102,7 +102,9 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
 
         mSrcDrawable = ExternalDrawable(mInFormat.width, mInFormat.height)
         mSrcDrawable.locTex.camera=false
-        mSrcDrawable?.locTex?.ratioSrc(mInFormat.height*1f/mInFormat.width)
+        mSrcDrawable?.locTex?.ratioSrc(mInFormat.height*1f/mInFormat.width
+            /(mOutFormat.height*1.0f/mOutFormat.width)
+        )
 
         mCahceDrawable = TextureDrawable(false, mOutFormat.width, mOutFormat.height)
         mCahceDrawable.locTex.mirror = false
@@ -261,8 +263,8 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
             }
             mSurfaceCanvans.makeCurrent()
             GLToolkit.checkError()
-            next.forward(Unit)
             GLES20.glViewport(0, 0, mOutFormat.width, mOutFormat.height)
+            next.forward(Unit)
             mFilterDrawable.draw(mEnv, mTexRender,null )
             mSurfaceCanvans.setPresentationTime(timestamp - mPtsStart)
             mSurfaceCanvans.swap()
