@@ -5,10 +5,11 @@ import com.taoisym.akmedia.R
 import com.taoisym.akmedia.render.FilterRender
 import com.taoisym.akmedia.render.TextureRender
 
-class Filters{
-    data class Shader(val fs:String,val res:Int)
+class Filters {
+    data class Shader(val fs: String, val res: Int)
     companion object {
         val buildin = arrayOf(
+                Shader("fs_no_oes.glsl", 0),
                 Shader("amaro.glsl", R.raw.filter2),
                 Shader("earlybird.glsl", R.raw.filter2),
                 Shader("hefe.glsl", R.raw.hefe),
@@ -16,9 +17,17 @@ class Filters{
                 Shader("mayfair.glsl", R.raw.filter2),
                 Shader("rise.glsl", R.raw.filter2),
                 Shader("toaster.glsl", R.raw.toaster),
-                Shader("willow.glsl", R.raw.filter2),
+                Shader("willow.glsl", 0),
                 Shader("xpro.glsl", R.raw.filter2),
-                Shader("fs_no_oes.glsl", 0)
+
+
+                Shader("amaro.glsl", R.raw.toaster),
+                Shader("earlybird.glsl", R.raw.toaster),
+                Shader("hefe.glsl", R.raw.toaster),
+                Shader("hudson.glsl", R.raw.toaster),
+                Shader("mayfair.glsl", R.raw.toaster),
+                Shader("rise.glsl", R.raw.toaster),
+                Shader("xpro.glsl", R.raw.toaster)
         )
         val size = buildin.size
         fun get(ctx: Context, i: Int): TextureRender {
