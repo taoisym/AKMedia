@@ -34,6 +34,7 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
     private lateinit var mOesRender: TextureRender
     private lateinit var mTexRender: TextureRender
     private lateinit var mFilterRender: TextureRender
+
     private var mEglThread: HandlerThread? = null
     private var mGLHanlde: Handler? = null
     protected lateinit var mEnv: GLEnv
@@ -95,7 +96,6 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
 
         env.oes = mOesRender
         env.tex = mTexRender
-
         mOesRender.prepare(env)
         mTexRender.prepare(env)
         mFilterRender.prepare(env)

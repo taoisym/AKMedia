@@ -15,4 +15,6 @@ class GLEnv {
         context?.release()
     }
 
+    lateinit var cc: TextureRender
+
 }

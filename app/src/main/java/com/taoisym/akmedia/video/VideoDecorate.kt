@@ -10,6 +10,7 @@ import com.taoisym.akmedia.drawable.BitmapDrawable
 import com.taoisym.akmedia.drawable.GifDrawable
 import com.taoisym.akmedia.drawable.VideoDrawable
 import com.taoisym.akmedia.layout.Loc
+import com.taoisym.akmedia.render.TextureRender
 import glm.vec2.Vec2
 
 
@@ -17,19 +18,25 @@ import glm.vec2.Vec2
  * render for video
  */
 class VideoDecorate(next: IMediaTargetSink<Unit, RealSurface>) : VideoGenerator(next) {
-    var drawable: VideoDrawable? = null
+    var video: VideoDrawable? = null
     var bmp: BitmapDrawable? = null
     var bmp1: BitmapDrawable? = null
     var gif: GifDrawable?=null
     var gif1: GifDrawable?=null
     val bp= GifBitmapProvider(LruBitmapPool(6))
+
     fun add(ctx: Context) {
         runGLThread {
-            drawable = VideoDrawable("/sdcard/girl.mp4")
-            drawable?.locShape = Loc(Vec2(0.0f, 0.0f), Vec2(1f, 1f))
+            val custom=TextureRender(true,true)
+            custom.apply {
+                prepare(mEnv)
+                video = VideoDrawable("/sdcard/girl.mp4",this)
+                video?.locShape = Loc(Vec2(0.0f, 0.0f), Vec2(1f, 1f))
 
-            drawable?.prepare(mEnv)
-            drawable?.start()
+                video?.prepare(mEnv)
+                video?.start()
+            }
+
 
             val b = BitmapFactory.decodeResource(ctx.resources,R.raw.src)
             bmp = BitmapDrawable(b)
@@ -52,8 +59,8 @@ class VideoDecorate(next: IMediaTargetSink<Unit, RealSurface>) : VideoGenerator(
 
     fun del() {
         runGLThread {
-            drawable?.release(mEnv)
-            drawable = null
+            video?.release(mEnv)
+            video = null
             bmp?.release(mEnv)
             bmp=null
             bmp1?.release(mEnv)
@@ -67,7 +74,7 @@ class VideoDecorate(next: IMediaTargetSink<Unit, RealSurface>) : VideoGenerator(
 
     override fun drawDecorate() {
         super.drawDecorate()
-        drawable?.draw(mEnv, null,null )
+        video?.draw(mEnv, null,null )
         bmp?.draw(mEnv, null, null)
         bmp1?.draw(mEnv, null, null)
         gif?.draw(mEnv, null, null)

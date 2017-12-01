@@ -5,10 +5,13 @@ import android.media.MediaMetadataRetriever
 import com.taoisym.akmedia.codec.AvcFileMeta
 import com.taoisym.akmedia.codec.avc.MediaDecoder
 import com.taoisym.akmedia.codec.avc.MediaSource
+import com.taoisym.akmedia.layout.GLTransform
+import com.taoisym.akmedia.render.FilterRender
 import com.taoisym.akmedia.render.GLEnv
+import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.std.Lazy
 
-class VideoDrawable(val uri: String) : ExternalDrawable(0, 0), PlayAble {
+class VideoDrawable(val uri: String,val custom: TextureRender) : ExternalDrawable(0, 0), PlayAble {
 
     private lateinit var mDecoder: MediaSource
 
@@ -18,7 +21,6 @@ class VideoDrawable(val uri: String) : ExternalDrawable(0, 0), PlayAble {
         val meta = AvcFileMeta(retriever)
         width = meta.width
         height = meta.height
-
         super.prepare(env)
     }
 
@@ -33,6 +35,10 @@ class VideoDrawable(val uri: String) : ExternalDrawable(0, 0), PlayAble {
         mDecoder.emit(uri)
         mDecoder.start()
 
+    }
+
+    override fun draw(env: GLEnv, render: TextureRender?, tr: GLTransform?) {
+        super.draw(env, custom, tr)
     }
 
     override fun stop() {
@@ -50,6 +56,7 @@ class VideoDrawable(val uri: String) : ExternalDrawable(0, 0), PlayAble {
 
     override fun release(env: GLEnv) {
         //mDecoder.stop()
+        custom.release(env)
         super.release(env)
     }
 
