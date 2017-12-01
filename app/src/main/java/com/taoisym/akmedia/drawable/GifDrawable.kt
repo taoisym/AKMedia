@@ -1,15 +1,11 @@
 package com.taoisym.akmedia.drawable
 
-import android.os.ConditionVariable
-import com.bumptech.glide.gifdecoder.GifDecoder
 import com.bumptech.glide.gifdecoder.StandardGifDecoder
-import com.bumptech.glide.load.engine.bitmap_recycle.LruBitmapPool
 import com.bumptech.glide.load.resource.gif.GifBitmapProvider
-import com.taoisym.akmedia.render.egl.GLEnv
+import com.taoisym.akmedia.render.GLEnv
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
-import java.util.concurrent.locks.Condition
 import kotlin.concurrent.thread
 
 class GifDrawable(val uri:String,bp:GifBitmapProvider):TextureDrawable(false,0,0),PlayAble

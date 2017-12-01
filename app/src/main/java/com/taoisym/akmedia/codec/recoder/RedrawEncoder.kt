@@ -18,7 +18,7 @@ import com.taoisym.akmedia.drawable.GLDrawable
 import com.taoisym.akmedia.drawable.TextureDrawable
 import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.render.egl.GLContext
-import com.taoisym.akmedia.render.egl.GLEnv
+import com.taoisym.akmedia.render.GLEnv
 import com.taoisym.akmedia.render.egl.GLToolkit
 import java.nio.ByteBuffer
 
@@ -118,7 +118,7 @@ class RedrawEncoder : IMediaSink<PresentSegment>, IMediaSource<NioSegment, Unit>
         }
     }
 
-    override fun scatter(data: PresentSegment): Boolean {
+    override fun emit(data: PresentSegment): Boolean {
         ptsBuffer!!.write(data.pts, data.data())
         //must block continue draw
         waitNewFrame()
@@ -138,7 +138,7 @@ class RedrawEncoder : IMediaSink<PresentSegment>, IMediaSource<NioSegment, Unit>
                 memo.set(info.presentationTimeUs, output!![idx])
                 memo.pos(0, output!![idx].limit())
                 memo.id = info.flags
-                next.scatter(memo)
+                next.emit(memo)
                 got = true
                 output!![idx].clear()
                 //Log.e("onFrameAvailable", "output=" + info.presentationTimeUs);
@@ -244,7 +244,7 @@ class RedrawEncoder : IMediaSink<PresentSegment>, IMediaSource<NioSegment, Unit>
                 view?.apply {
                     mtxShape.put(tr_final)
                     //todo!!!
-                    draw(env!!,null as TextureRender)
+                    draw(env!!, null as TextureRender,null )
                 }
                 out!!.setPresentationTime(time)
                 out!!.swap()

@@ -51,7 +51,7 @@ class AacPlayer : IMediaSink<NioSegment> {
     }
 
     @Synchronized
-    override fun scatter(data: NioSegment): Boolean {
+    override fun emit(data: NioSegment): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (mute) {
                 muteBuffer.clear()

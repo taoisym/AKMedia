@@ -1,15 +1,12 @@
 package com.taoisym.akmedia.ui
 
 import android.content.Context
-import android.graphics.BitmapFactory
-import com.taoisym.akmedia.R
 import com.taoisym.akmedia.camera.AkCamera
 import com.taoisym.akmedia.codec.SegmentFormat
 import com.taoisym.akmedia.codec.avc.MediaMuxer
 import com.taoisym.akmedia.codec.avc.MediaWriter
-import com.taoisym.akmedia.render.FilterRender
 import com.taoisym.akmedia.render.TextureRender
-import com.taoisym.akmedia.render.egl.GLEnv
+import com.taoisym.akmedia.render.GLEnv
 import com.taoisym.akmedia.std.Supplier
 import com.taoisym.akmedia.video.FileTarget
 import com.taoisym.akmedia.video.RealSurface
@@ -27,7 +24,7 @@ class CamTest {
         vg = VideoDecorate(SurfaceTarget(surface))
         val size = camera.parameter.previewSize
         val fmt = SegmentFormat(size.width, size.height, 0)
-        fmt.rotation = 180
+        fmt.rotation = 90
         vg?.prepare()
         vg?.setFormat(context, fmt)
         camera.setPreviewTexture(vg!!.target)

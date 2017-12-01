@@ -21,7 +21,7 @@ class MediaWriter(private val muxer: MediaMuxer) : IMediaSink<NioSegment> {
         return null
     }
 
-    override fun scatter(nio: NioSegment): Boolean {
+    override fun emit(nio: NioSegment): Boolean {
         info.presentationTimeUs = nio.pts
         info.offset = 0
         info.size = nio.buffer.limit()

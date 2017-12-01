@@ -1,5 +1,6 @@
 package com.taoisym.akmedia.layout
 
+import glm.vec3.Vec3
 import glm.vec4.Vec4
 
 class GLTransform {

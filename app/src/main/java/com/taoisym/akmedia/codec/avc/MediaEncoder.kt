@@ -56,7 +56,7 @@ class MediaEncoder(private var next: IMediaSink<NioSegment>) : IMediaSink<NioSeg
         encoder?.setParameters(param)
     }
 
-    override fun scatter(data: NioSegment): Boolean {
+    override fun emit(data: NioSegment): Boolean {
         val idx = encoder!!.dequeueInputBuffer(-1)
         if (idx >= 0) {
             forceKeyFrame()
@@ -77,7 +77,7 @@ class MediaEncoder(private var next: IMediaSink<NioSegment>) : IMediaSink<NioSeg
                 memo.set(info.presentationTimeUs, output!![idx])
                 memo.pos(0, output!![idx].limit())
                 memo.id = info.flags
-                next.scatter(memo)
+                next.emit(memo)
                 got = true
                 output!![idx].clear()
                 //Log.e("onFrameAvailable", "o=" + info.size);

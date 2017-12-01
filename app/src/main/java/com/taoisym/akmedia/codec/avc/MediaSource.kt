@@ -260,7 +260,7 @@ class MediaSource(private val startState: Int, private var endState: Int) : IMed
                         //Log.e("onFrameAvailable","type="+idx+" pts="+pts);
                         if (idx == videoIdx)
                             last = pts
-                        wrap.scatter(memo)
+                        wrap.emit(memo)
                     }
                     advance = extractor!!.advance()
                 } else {
@@ -308,7 +308,7 @@ class MediaSource(private val startState: Int, private var endState: Int) : IMed
                     //                        break;
                     if (idx == videoIdx) {
                         val wrap = fastLookup[videoIdx]
-                        got = wrap!!.scatter(memo)
+                        got = wrap!!.emit(memo)
                     }
                     if (extractor!!.advance() == false) {
                         return
@@ -377,7 +377,7 @@ class MediaSource(private val startState: Int, private var endState: Int) : IMed
         Stats.print("Release codec:" + mediaPath!!)
     }
 
-    override fun scatter(file: String): Boolean {
+    override fun emit(file: String): Boolean {
         mediaPath = file
         return initMedia(true) != null
     }

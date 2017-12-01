@@ -58,9 +58,9 @@ public class VideoRecoder extends MediaConvertor {
             }
 
             @Override
-            public boolean scatter(NioSegment o) {
+            public boolean emit(NioSegment o) {
                 sendProcess(o.pts);
-                return super.scatter(o);
+                return super.emit(o);
             }
 
             @Override
@@ -75,11 +75,11 @@ public class VideoRecoder extends MediaConvertor {
         src.addSink(new MediaReader(new MediaCopier(muxer)), 1);
         src.addSink(passer, 0);
         if (in != null) {
-            src.scatter(in);
+            src.emit(in);
         } else if (crop != null) {
             src.setSeekMode(MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
             src.setPlayRange(crop.startPts, crop.endPts);
-            src.scatter(crop.uri);
+            src.emit(crop.uri);
         } else {
 
             return;

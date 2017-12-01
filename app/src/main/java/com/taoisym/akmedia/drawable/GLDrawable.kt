@@ -2,14 +2,14 @@ package com.taoisym.akmedia.drawable
 
 import android.opengl.GLES20
 import android.opengl.Matrix
+import com.taoisym.akmedia.layout.GLTransform
 import com.taoisym.akmedia.layout.Loc
 import com.taoisym.akmedia.render.TextureRender
-import com.taoisym.akmedia.render.egl.GLEnv
+import com.taoisym.akmedia.render.GLEnv
 import com.taoisym.akmedia.render.egl.GLTexture
 import com.taoisym.akmedia.render.egl.GLToolkit
 import com.taoisym.akmedia.render.egl.IGLNode
 import com.taoisym.akmedia.std.Ref
-import com.taoisym.akmedia.std.Supplier
 import glm.mat4x4.Mat4
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -31,10 +31,10 @@ abstract class GLDrawable(val oes: Boolean) : IGLNode {
         Matrix.setIdentityM(id, 0)
     }
 
-    fun update(render: TextureRender) {
-        android.opengl.GLES20.glVertexAttribPointer(render.shapeId, 2, android.opengl.GLES20.GL_FLOAT, false, 8, locShape.toGL(null))
+    fun update(render: TextureRender,tr: GLTransform?) {
+        android.opengl.GLES20.glVertexAttribPointer(render.shapeId, 2, android.opengl.GLES20.GL_FLOAT, false, 8, locShape.toGL(tr))
         android.opengl.GLES20.glEnableVertexAttribArray(render.shapeId)
-        android.opengl.GLES20.glVertexAttribPointer(render.texId, 2, android.opengl.GLES20.GL_FLOAT, false, 8, locTex.toGL(null))
+        android.opengl.GLES20.glVertexAttribPointer(render.texId, 2, android.opengl.GLES20.GL_FLOAT, false, 8, locTex.toGL(tr))
         android.opengl.GLES20.glEnableVertexAttribArray(render.texId)
     }
 
@@ -42,9 +42,9 @@ abstract class GLDrawable(val oes: Boolean) : IGLNode {
         texture.value?.release(env)
     }
 
-    open fun draw(env: GLEnv, render: TextureRender?) {
+    open fun draw(env: GLEnv, render: TextureRender?, tr: GLTransform?) {
         val tex=texture.value
-        if (tex == null)
+        if (tex === null)
             return
 
         var used = render
@@ -52,7 +52,7 @@ abstract class GLDrawable(val oes: Boolean) : IGLNode {
             used = if (oes) env.oes else env.tex
         }
         used.using(true)
-        update(used)
+        update(used,tr)
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLES20.glBindTexture(tex.type, tex.id)
         GLToolkit.checkError()
@@ -61,12 +61,12 @@ abstract class GLDrawable(val oes: Boolean) : IGLNode {
         mtxCache.clear()
         mtxShape.to(mtxCache)
         //mtxCache.flip()
-        GLES20.glUniformMatrix4fv(used.trShape, 1, false, id, 0)
+        GLES20.glUniformMatrix4fv(used.trShape, 1, false, mtxCache)
         GLToolkit.checkError()
         mtxCache.clear()
         mtxTex.to(mtxCache)
         //mtxCache.flip()
-        GLES20.glUniformMatrix4fv(used.trTex, 1, false, id, 0)
+        GLES20.glUniformMatrix4fv(used.trTex, 1, false, mtxCache)
         GLToolkit.checkError()
         android.opengl.GLES20.glDrawArrays(android.opengl.GLES20.GL_TRIANGLE_STRIP, 0, 4)
         GLToolkit.checkError()

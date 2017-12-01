@@ -5,10 +5,8 @@ import android.media.MediaMetadataRetriever
 import com.taoisym.akmedia.codec.AvcFileMeta
 import com.taoisym.akmedia.codec.avc.MediaDecoder
 import com.taoisym.akmedia.codec.avc.MediaSource
-import com.taoisym.akmedia.layout.Loc
-import com.taoisym.akmedia.render.egl.GLEnv
+import com.taoisym.akmedia.render.GLEnv
 import com.taoisym.akmedia.std.Lazy
-import glm.vec2.Vec2
 
 class VideoDrawable(val uri: String) : ExternalDrawable(0, 0), PlayAble {
 
@@ -32,7 +30,7 @@ class VideoDrawable(val uri: String) : ExternalDrawable(0, 0), PlayAble {
 
         mDecoder = MediaSource(MediaSource.CONTINUE, MediaSource.CONTINUE)
         mDecoder.addSink(MediaDecoder(null, lazy), 0)
-        mDecoder.scatter(uri)
+        mDecoder.emit(uri)
         mDecoder.start()
 
     }

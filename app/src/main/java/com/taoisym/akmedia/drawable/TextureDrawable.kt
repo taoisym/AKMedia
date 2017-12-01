@@ -2,7 +2,7 @@ package com.taoisym.akmedia.drawable
 
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
-import com.taoisym.akmedia.render.egl.GLEnv
+import com.taoisym.akmedia.render.GLEnv
 import com.taoisym.akmedia.render.egl.GLTexture
 
 open class TextureDrawable(oes: Boolean, var width: Int, var height: Int) : GLDrawable(oes) {

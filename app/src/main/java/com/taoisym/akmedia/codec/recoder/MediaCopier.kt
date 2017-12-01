@@ -24,7 +24,7 @@ open class MediaCopier(private val muxer: MediaMuxer) : IMediaSink<NioSegment> {
         return null
     }
 
-    override fun scatter(nio: NioSegment): Boolean {
+    override fun emit(nio: NioSegment): Boolean {
         buffer?.run {
             buffer!!.clear()
             val size = extractor!!.readSampleData(buffer!!, 0)

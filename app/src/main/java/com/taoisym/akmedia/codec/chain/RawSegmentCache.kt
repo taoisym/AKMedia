@@ -32,7 +32,7 @@ class RawSegmentCache(cache: Int) : IMediaSink<RawSegment>, IMediaPoller<RawSegm
 
     }
 
-    override fun scatter(data: RawSegment): Boolean {
+    override fun emit(data: RawSegment): Boolean {
         val push = RawSegment(data.meta)
         push.pos(data.offset, data.size)
         val alloc = ByteArray(data.size)

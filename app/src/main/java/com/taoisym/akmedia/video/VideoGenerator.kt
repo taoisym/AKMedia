@@ -11,7 +11,7 @@ import com.taoisym.akmedia.drawable.ExternalDrawable
 import com.taoisym.akmedia.drawable.TextureDrawable
 import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.render.egl.GLContext
-import com.taoisym.akmedia.render.egl.GLEnv
+import com.taoisym.akmedia.render.GLEnv
 import com.taoisym.akmedia.render.egl.GLFbo
 import com.taoisym.akmedia.render.egl.GLToolkit
 import com.taoisym.akmedia.std.Supplier
@@ -37,13 +37,14 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
     private var mEglThread: HandlerThread? = null
     private var mGLHanlde: Handler? = null
     protected lateinit var mEnv: GLEnv
-    private lateinit var mFormat: SegmentFormat
+    private lateinit var mInFormat: SegmentFormat
+    private lateinit var mOutFormat: SegmentFormat
 
     private lateinit var mMainOutput: OutputNode
     private var mSubOutput: OutputNode? = null
 
     override val format: SegmentFormat
-        get() = mFormat
+        get() = mOutFormat
     override val target: Supplier<SurfaceTexture>
         get() = mInputTarget
 
@@ -72,7 +73,10 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
             format.width = format.height
             format.height = swap
         }
-        mFormat = format
+        mInFormat = format
+        mOutFormat =SegmentFormat(format)
+        mOutFormat.height=mOutFormat.width
+        mOutFormat.rotation=0
 
         val eglContext = GLToolkit.eglSetup(null, true)
         env.context = eglContext
@@ -96,13 +100,14 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
         mTexRender.prepare(env)
         mFilterRender.prepare(env)
 
-        mSrcDrawable = ExternalDrawable(format.width, format.height)
+        mSrcDrawable = ExternalDrawable(mInFormat.width, mInFormat.height)
         mSrcDrawable.locTex.camera=false
+        mSrcDrawable?.locTex?.ratioSrc(mInFormat.height*1f/mInFormat.width)
 
-        mCahceDrawable = TextureDrawable(false, format.width, format.height)
+        mCahceDrawable = TextureDrawable(false, mOutFormat.width, mOutFormat.height)
         mCahceDrawable.locTex.mirror = false
 
-        mFilterDrawable = TextureDrawable(false, format.width, format.height)
+        mFilterDrawable = TextureDrawable(false, mOutFormat.width, mOutFormat.height)
         mFilterDrawable.locTex.mirror = false
 
 
@@ -142,10 +147,10 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
         mMainOutput.makeCurrent()
         mCacheFbo.using(true)
         mOesRender.clearColor(floatArrayOf(1.0f, 1f, 1f, 1f))
-        GLES20.glViewport(0, 0, format.width, format.height)
+        GLES20.glViewport(0, 0, mOutFormat.width, mOutFormat.height)
         val mtx = FloatArray(16)
         mInputTarget.get().getTransformMatrix(mtx)
-        mSrcDrawable.draw(mEnv, mOesRender)
+        mSrcDrawable.draw(mEnv, mOesRender, null)
         drawDecorate()
         mCacheFbo.using(false)
 
@@ -153,8 +158,8 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
 
     private fun drawFilter() {
         mFilterFbo.using(true)
-        GLES20.glViewport(0, 0, format.width, format.height)
-        mCahceDrawable.draw(mEnv, mFilterRender)
+        GLES20.glViewport(0, 0, mOutFormat.width, mOutFormat.height)
+        mCahceDrawable.draw(mEnv, mFilterRender,null )
         mFilterFbo.using(false)
     }
 
@@ -197,7 +202,7 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
         return null
     }
 
-    override fun scatter(unit: Unit): Boolean {
+    override fun emit(unit: Unit): Boolean {
         return false
     }
 
@@ -235,7 +240,7 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
 
         fun init(GLContext: GLContext): OutputNode {
             next.prepare()
-            next.setFormat(mEnv, format)
+            next.setFormat(mEnv, mOutFormat)
             mSurface = next.target.get()
             mSurfaceCanvans = GLContext.createWindowSurface(mSurface.surface)
             return this
@@ -256,11 +261,12 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
             }
             mSurfaceCanvans.makeCurrent()
             GLToolkit.checkError()
-            GLES20.glViewport(0, 0, mSurface.width, mSurface.height)
-            mFilterDrawable.draw(mEnv, mTexRender)
+            next.forward(Unit)
+            GLES20.glViewport(0, 0, mOutFormat.width, mOutFormat.height)
+            mFilterDrawable.draw(mEnv, mTexRender,null )
             mSurfaceCanvans.setPresentationTime(timestamp - mPtsStart)
             mSurfaceCanvans.swap()
-            next.scatter(Unit)
+            next.emit(Unit)
         }
 
     }

@@ -1,7 +1,6 @@
 package com.taoisym.akmedia.render
 
 import android.opengl.GLES20
-import com.taoisym.akmedia.render.egl.GLEnv
 import com.taoisym.akmedia.render.egl.GLProgram
 import com.taoisym.akmedia.render.egl.IGLNode
 

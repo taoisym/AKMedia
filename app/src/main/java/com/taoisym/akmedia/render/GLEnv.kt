@@ -1,8 +1,7 @@
-package com.taoisym.akmedia.render.egl
+package com.taoisym.akmedia.render
 
 
-import android.util.Pair
-import com.taoisym.akmedia.render.TextureRender
+import com.taoisym.akmedia.render.egl.GLContext
 import com.taoisym.akmedia.video.ResourceUploader
 
 

@@ -30,7 +30,7 @@ class Filters{
             } else {
                 val bmp: Bitmap? = null
                 try {
-                    val bmp = BitmapFactory.decodeResource(ctx.resources, R.raw.toaster)
+                    val bmp = BitmapFactory.decodeResource(ctx.resources, shader.res)
                     return FilterRender(vs, fs, bmp)
                 } finally {
                     bmp?.recycle()

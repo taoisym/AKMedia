@@ -2,6 +2,8 @@ package com.taoisym.akmedia.render.egl;
 
 import android.opengl.GLES20;
 
+import com.taoisym.akmedia.render.GLEnv;
+
 
 public class GLFbo implements IGLNode {
     protected GLTexture texture;
