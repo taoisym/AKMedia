@@ -22,12 +22,10 @@ class FilterRender(vs:String,fs:String,val bmp:Bitmap) : TextureRender(vs,fs) {
         super.using(use)
         if(use) {
             GLES20.glActiveTexture(GLES20.GL_TEXTURE1)
-            //GLES20.glUniform1i(GLES20.GL_TEXTURE1,texture_1)
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, filterTexture.value!!.id)
 
         }else{
             GLES20.glActiveTexture(GLES20.GL_TEXTURE1)
-            GLES20.glUniform1i(GLES20.GL_TEXTURE1,0)
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,0)
         }
     }

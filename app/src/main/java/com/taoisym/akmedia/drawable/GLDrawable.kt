@@ -55,7 +55,6 @@ abstract class GLDrawable(val oes: Boolean) : IGLNode {
         update(used,tr)
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLES20.glBindTexture(tex.type, tex.id)
-        //GLES20.glUniform1i(0,used.texActive)
         GLToolkit.checkError()
         mtxCache.clear()
         mtxShape.to(mtxCache)
