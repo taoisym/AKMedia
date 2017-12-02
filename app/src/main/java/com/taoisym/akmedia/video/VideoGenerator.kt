@@ -77,7 +77,7 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
         }
         mInFormat = format
         mOutFormat =SegmentFormat(format)
-        mOutFormat.height=mOutFormat.width
+        //mOutFormat.height=mOutFormat.width
         mOutFormat.rotation=0
 
         val eglContext = GLToolkit.eglSetup(null, true)
@@ -102,16 +102,11 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
         mFilterRender.prepare(env)
 
         mSrcDrawable = ExternalDrawable(mInFormat.width, mInFormat.height)
-        mSrcDrawable.locTex= Loc(1,true,1f)
-//        mSrcDrawable?.locTex?.ratioSrc(mInFormat.height*1f/mInFormat.width
-//            /(mOutFormat.height*1.0f/mOutFormat.width)
-//        )
+        mSrcDrawable.locTex= Loc(mInFormat.dir,true,mInFormat.height*1f/mInFormat.width
+            /(mOutFormat.height*1.0f/mOutFormat.width))
 
         mCahceDrawable = TextureDrawable(false, mOutFormat.width, mOutFormat.height)
-//        mCahceDrawable.locTex.mirror = false
-
         mFilterDrawable = TextureDrawable(false, mOutFormat.width, mOutFormat.height)
-//        mFilterDrawable.locTex.mirror = false
 
 
         mSrcDrawable.prepare(env)

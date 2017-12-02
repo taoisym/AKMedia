@@ -4,6 +4,7 @@ import android.media.MediaFormat;
 
 
 public class SegmentFormat {
+
     public final String mime;
     public final int channel;
     public final int sample;
@@ -15,6 +16,7 @@ public class SegmentFormat {
     public int BIT_RATE;
     public int FRAME_RATE = 30;
     public int I_FRAME_INTERVAL;
+    public VideoDir dir=VideoDir.FLIP_Y;
     MediaFormat format;
 
     public SegmentFormat(SegmentFormat format) {
@@ -72,9 +74,9 @@ public class SegmentFormat {
     }
 
     public MediaFormat format() {
-        if (format != null) {
-            return format;
-        }
+//        if (format != null) {
+//            return format;
+//        }
         MediaFormat fmt = mime.equals(MediaFormat.MIMETYPE_VIDEO_AVC) ?
                 MediaFormat.createVideoFormat(mime, width, height) :
                 MediaFormat.createAudioFormat(mime, sample, channel);

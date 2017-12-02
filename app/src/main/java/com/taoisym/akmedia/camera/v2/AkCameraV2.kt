@@ -8,6 +8,9 @@ import com.taoisym.akmedia.std.Supplier
 
 
 class AkCameraV2 : AkCamera {
+    override var face: Boolean?
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        set(value) {}
 
     override val parameter: AkCamera.Parameter
         get() = throw RuntimeException()

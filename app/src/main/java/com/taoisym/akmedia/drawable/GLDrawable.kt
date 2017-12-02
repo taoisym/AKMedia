@@ -2,6 +2,7 @@ package com.taoisym.akmedia.drawable
 
 import android.opengl.GLES20
 import android.opengl.Matrix
+import com.taoisym.akmedia.codec.VideoDir
 import com.taoisym.akmedia.layout.GLTransform
 import com.taoisym.akmedia.layout.Loc
 import com.taoisym.akmedia.render.TextureRender
@@ -19,7 +20,7 @@ import java.nio.FloatBuffer
 abstract class GLDrawable(val oes: Boolean) : IGLNode {
     var texture= Ref<GLTexture>(null)
     var locShape = Loc()
-    var locTex = Loc(2)
+    var locTex = Loc(VideoDir.FLIP_Y)
     var mtxShape = Mat4()
     var mtxTex = Mat4()
 

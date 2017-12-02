@@ -1,6 +1,7 @@
 package com.taoisym.akmedia.layout
 
 import android.graphics.Matrix
+import com.taoisym.akmedia.codec.VideoDir
 import glm.mat4x4.Mat4
 import glm.vec2.Vec2
 import glm.vec3.Vec3
@@ -15,7 +16,7 @@ class Loc{
      * 0 X=1 Y=2 XY=3
      * Video=2,BackCamera=1,FrontCamera=3
      */
-    private var flipXY: Int=2
+    private var flipXY: VideoDir=VideoDir.FLIP_Y
     private var rotate: Boolean=false
     private var hwRatio: Float=1f
     private val loc = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer()
@@ -28,14 +29,14 @@ class Loc{
     }
 
     /**
-     *              Video FrontCamera BackCamera
-     * flipY :      true  true        false
-     * rotate:      false true        true
+     *              Mp4Video FrontCamera BackCamera
+     * flipXY :     2        3            1
+     * rotate:      false    true        true
      *
      * center crop fill view
      * hwRatio=     (viewH/W)/(srcH/W)
      */
-    constructor(flipXY:Int, rotate: Boolean=false, hwRatio:Float=1f){
+    constructor(flipXY:VideoDir, rotate: Boolean=false, hwRatio:Float=1f){
         tex=true
         this.flipXY=flipXY
         this.rotate=rotate
@@ -67,15 +68,15 @@ class Loc{
         var mat= Matrix()
         mat.postTranslate(-0.5f,-0.5f)
         when(flipXY){
-            1->mat.postScale(-1f,1f)
-            2->mat.postScale(1f,-1f)
-            3->mat.postScale(-1f,-1f)
+            VideoDir.FLIP_X->mat.postScale(-1f,1f)
+            VideoDir.FLIP_Y->mat.postScale(1f,-1f)
+            VideoDir.FLIP_XY->mat.postScale(-1f,-1f)
         }
 
         if(rotate) {
             mat.postRotate(90f, 0.0f, 0.0f)
         }
-        //centerCrop(mat, hwRatio,rotate)
+        centerCrop(mat, hwRatio,rotate)
         mat.postTranslate(0.5f,0.5f)
         mat.mapPoints(dots)
         fillGL(dots)
