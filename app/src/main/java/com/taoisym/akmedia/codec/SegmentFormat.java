@@ -74,9 +74,9 @@ public class SegmentFormat {
     }
 
     public MediaFormat format() {
-//        if (format != null) {
-//            return format;
-//        }
+        if (format != null) {
+            return format;
+        }
         MediaFormat fmt = mime.equals(MediaFormat.MIMETYPE_VIDEO_AVC) ?
                 MediaFormat.createVideoFormat(mime, width, height) :
                 MediaFormat.createAudioFormat(mime, sample, channel);
