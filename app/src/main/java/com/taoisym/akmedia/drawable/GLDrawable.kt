@@ -19,7 +19,7 @@ import java.nio.FloatBuffer
 abstract class GLDrawable(val oes: Boolean) : IGLNode {
     var texture= Ref<GLTexture>(null)
     var locShape = Loc()
-    var locTex = Loc(true)
+    var locTex = Loc(2)
     var mtxShape = Mat4()
     var mtxTex = Mat4()
 
@@ -32,9 +32,9 @@ abstract class GLDrawable(val oes: Boolean) : IGLNode {
     }
 
     fun update(render: TextureRender,tr: GLTransform?) {
-        android.opengl.GLES20.glVertexAttribPointer(render.shapeId, 2, android.opengl.GLES20.GL_FLOAT, false, 8, locShape.toGL(tr))
+        android.opengl.GLES20.glVertexAttribPointer(render.shapeId, 2, android.opengl.GLES20.GL_FLOAT, false, 8, locShape.toGL())
         android.opengl.GLES20.glEnableVertexAttribArray(render.shapeId)
-        android.opengl.GLES20.glVertexAttribPointer(render.texId, 2, android.opengl.GLES20.GL_FLOAT, false, 8, locTex.toGL(tr))
+        android.opengl.GLES20.glVertexAttribPointer(render.texId, 2, android.opengl.GLES20.GL_FLOAT, false, 8, locTex.toGL())
         android.opengl.GLES20.glEnableVertexAttribArray(render.texId)
     }
 

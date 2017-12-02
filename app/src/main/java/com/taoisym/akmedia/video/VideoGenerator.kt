@@ -9,6 +9,7 @@ import com.taoisym.akmedia.codec.IMediaTargetSink
 import com.taoisym.akmedia.codec.SegmentFormat
 import com.taoisym.akmedia.drawable.ExternalDrawable
 import com.taoisym.akmedia.drawable.TextureDrawable
+import com.taoisym.akmedia.layout.Loc
 import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.render.egl.GLContext
 import com.taoisym.akmedia.render.GLEnv
@@ -101,16 +102,16 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
         mFilterRender.prepare(env)
 
         mSrcDrawable = ExternalDrawable(mInFormat.width, mInFormat.height)
-        mSrcDrawable.locTex.camera=false
-        mSrcDrawable?.locTex?.ratioSrc(mInFormat.height*1f/mInFormat.width
-            /(mOutFormat.height*1.0f/mOutFormat.width)
-        )
+        mSrcDrawable.locTex= Loc(1,true,1f)
+//        mSrcDrawable?.locTex?.ratioSrc(mInFormat.height*1f/mInFormat.width
+//            /(mOutFormat.height*1.0f/mOutFormat.width)
+//        )
 
         mCahceDrawable = TextureDrawable(false, mOutFormat.width, mOutFormat.height)
-        mCahceDrawable.locTex.mirror = false
+//        mCahceDrawable.locTex.mirror = false
 
         mFilterDrawable = TextureDrawable(false, mOutFormat.width, mOutFormat.height)
-        mFilterDrawable.locTex.mirror = false
+//        mFilterDrawable.locTex.mirror = false
 
 
         mSrcDrawable.prepare(env)
@@ -131,7 +132,6 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
 
 
     private fun eglDrawFrame() {
-
         drawCache()
         //filter
         drawFilter()

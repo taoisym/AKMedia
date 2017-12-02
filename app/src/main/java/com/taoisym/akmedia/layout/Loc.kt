@@ -1,114 +1,103 @@
 package com.taoisym.akmedia.layout
 
+import android.graphics.Matrix
 import glm.mat4x4.Mat4
 import glm.vec2.Vec2
 import glm.vec3.Vec3
 import glm.vec4.Vec4
-import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.nio.FloatBuffer
 
-class Loc {
+class Loc{
+    private var tex=false
+    /**
+     * 0 X=1 Y=2 XY=3
+     * Video=2,BackCamera=1,FrontCamera=3
+     */
+    private var flipXY: Int=2
+    private var rotate: Boolean=false
+    private var hwRatio: Float=1f
+    private val loc = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer()
 
-    constructor(p0: Vec2, p1: Vec2, texMirror: Boolean = false) {
-        this.mirror = texMirror
-        corner0 = Vec4(p0, 0,1)
-        corner1 = Vec4(p1, 0f,1)
+    /**
+     * constructor for position
+     */
+    constructor(p0: Vec2=Vec2(-1), p1: Vec2=Vec2(1)){
+        set(p0,p1)
     }
 
-    constructor(tex: Boolean = false) {
-        if (tex) {
-            corner0 = Vec4(0, 0, 0,1)
-        } else {
-            corner0 = Vec4(-1, -1, 0,1)
+    /**
+     *              Video FrontCamera BackCamera
+     * flipY :      true  true        false
+     * rotate:      false true        true
+     *
+     * center crop fill view
+     * hwRatio=     (viewH/W)/(srcH/W)
+     */
+    constructor(flipXY:Int, rotate: Boolean=false, hwRatio:Float=1f){
+        tex=true
+        this.flipXY=flipXY
+        this.rotate=rotate
+        this.hwRatio=hwRatio
+        set(Vec2(0),Vec2(1))
+    }
+    fun set(p0: Vec2, p1: Vec2){
+        var dots=FloatArray(8)
+        dots[0]=p0.x
+        dots[1]=p1.y
+
+        dots[2]=p1.x
+        dots[3]=p1.y
+
+        dots[4]=p0.x
+        dots[5]=p0.y
+
+        dots[6]=p1.x
+        dots[7]=p0.y
+        if(tex){
+            comupte(dots)
         }
-        this.mirror = tex
-        corner1 = Vec4(1, 1, 0f,1)
+        fillGL(dots)
     }
-    fun ratioSrc(hwRatio: Float, rotate:Boolean=true):Loc{
-        var mat= Mat4()
+    fun toGL(): FloatBuffer {
+        return loc
+    }
+    fun comupte(dots: FloatArray){
+        var mat= Matrix()
+        mat.postTranslate(-0.5f,-0.5f)
+        when(flipXY){
+            1->mat.postScale(-1f,1f)
+            2->mat.postScale(1f,-1f)
+            3->mat.postScale(-1f,-1f)
+        }
+
+        if(rotate) {
+            mat.postRotate(90f, 0.0f, 0.0f)
+        }
+        //centerCrop(mat, hwRatio,rotate)
+        mat.postTranslate(0.5f,0.5f)
+        mat.mapPoints(dots)
+        fillGL(dots)
+    }
+    private fun fillGL(dots:FloatArray){
+        loc.position(0)
+        loc.put(dots)
+        loc.position(0)
+    }
+    private fun centerCrop(mat:Matrix, hwRatio: Float, rotate:Boolean=true) {
         if(rotate) {
             if (hwRatio > 1) {
-                mat = mat.translate(Vec3(0.5)).scale(1 / hwRatio, 1f, 1f).translate(Vec3(-0.5))
+                mat.postScale(1 / hwRatio, 1f)
             } else if (hwRatio < 1) {
-                mat = mat.translate(Vec3(0.5)).scale(1f, 1 / hwRatio, 1f).translate(Vec3(-0.5))
+                mat.postScale(1f, 1 / hwRatio)
             }
         }else{
             if (hwRatio > 1) {
-                mat = mat.translate(Vec3(0.5)).scale(1f, 1 / hwRatio, 1f).translate(Vec3(-0.5))
+                mat.postScale(1f, 1 / hwRatio)
             } else if (hwRatio < 1) {
-                mat = mat.translate(Vec3(0.5)).scale(1 / hwRatio, 1f,1f).translate(Vec3(-0.5))
+                mat.postScale(1 / hwRatio, 1f)
             }
         }
-        corner0=mat*corner0
-        corner1=mat*corner1
-        return this
     }
-    private var changed = true
-    var mirror: Boolean = false
-    var camera: Boolean?=null
-    var corner0: Vec4
-        set(value) {
-            changed = true
-            field = value
-        }
-    var corner1: Vec4
-        set(value) {
-            changed = true
-            field = value
-        }
-
-    val loc = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer()
-
-    fun toGL(tr: GLTransform?): Buffer {
-        if (!changed)
-            return loc
-        changed = false
-        var a = if (tr != null) tr.translate(corner0) else corner0
-        var b = if (tr != null) tr.translate(corner1) else corner1
-        loc.position(0)
-        if (mirror) {
-            if(camera==null){
-                loc.put(a.x)
-                loc.put(b.y)
-                loc.put(b.x)
-                loc.put(b.y)
-                loc.put(a.x)
-                loc.put(a.y)
-                loc.put(b.x)
-                loc.put(a.y)
-            }else if(camera==true) {
-                loc.put(a.x)
-                loc.put(b.y)
-                loc.put(a.x)
-                loc.put(a.y)
-                loc.put(b.x)
-                loc.put(b.y)
-                loc.put(b.x)
-                loc.put(a.y)
-            }else{
-                loc.put(b.x)
-                loc.put(b.y)
-                loc.put(b.x)
-                loc.put(a.y)
-                loc.put(a.x)
-                loc.put(b.y)
-                loc.put(a.x)
-                loc.put(a.y)
-            }
-        } else {
-            loc.put(a.x)
-            loc.put(a.y)
-            loc.put(b.x)
-            loc.put(a.y)
-            loc.put(a.x)
-            loc.put(b.y)
-            loc.put(b.x)
-            loc.put(b.y)
-        }
-        loc.position(0)
-        return loc
-    }
-
-
 }

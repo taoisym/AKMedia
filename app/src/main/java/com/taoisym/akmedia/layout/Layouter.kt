@@ -4,14 +4,13 @@ import glm.vec4.Vec4
 
 class Layout(srcWidth:Int,srcHeight:Int,camera:Boolean?=null){
     val locShape:Loc=Loc()
-    val locTex:Loc=Loc(tex = true)
+    val locTex:Loc=Loc()
 
     private var height=0
     private var width=0
     private var x:Int=0
     private var y:Int=0
     init {
-        locTex.camera=camera
     }
     var gravity:Gravity=FillXY()
         set(value) {
@@ -35,10 +34,6 @@ sealed class Gravity{
 }
 class FillXY:Gravity(){
     override fun compute(layout: Layout) {
-        layout.locShape.corner0= Vec4(-1,-1,0,0)
-        layout.locShape.corner1= Vec4(1,1,0,0)
-        layout.locTex.corner0= Vec4(0,0,0,0)
-        layout.locTex.corner1 =Vec4(1,1,0,0)
     }
 }
 class CenterCrop:Gravity(){
