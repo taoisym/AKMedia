@@ -13,6 +13,7 @@ import com.taoisym.akmedia.layout.Loc
 import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.render.egl.GLContext
 import com.taoisym.akmedia.render.GLEnv
+import com.taoisym.akmedia.render.ResManager
 import com.taoisym.akmedia.render.egl.GLFbo
 import com.taoisym.akmedia.render.egl.GLToolkit
 import com.taoisym.akmedia.std.Supplier
@@ -21,7 +22,7 @@ import com.taoisym.akmedia.std.Supplier
 /**
  * render for video
  */
-open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>) :
+open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
         IMediaTargetSink<Unit, SurfaceTexture>,
         IMediaSource<Unit, RealSurface> {
 
@@ -82,8 +83,7 @@ open class VideoGenerator(private val next: IMediaTargetSink<Unit, RealSurface>)
 
         val eglContext = GLToolkit.eglSetup(null, true)
         env.context = eglContext
-        val res = ResourceUploader(mGLHanlde!!)
-        env.glres = res
+        env.resManager = ResManager(env)
 
         mMainOutput = OutputNode(next).init(eglContext)
         mMainOutput.makeCurrent()

@@ -33,7 +33,7 @@ class GifDrawable(val uri:String,bp:GifBitmapProvider):TextureDrawable(false,0,0
                     if(frame==null){
                         decorer.resetFrameIndex()
                     }else{
-                        env.glres?.upload(Runnable {
+                        env.resManager?.upload(Runnable {
                             texture.value?.update(frame)
                         })
                         Thread.sleep(decorer.nextDelay.toLong())

@@ -1,4 +1,4 @@
-package com.taoisym.akmedia.video
+package com.taoisym.akmedia.ui
 
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -11,13 +11,15 @@ import com.taoisym.akmedia.drawable.GifDrawable
 import com.taoisym.akmedia.drawable.VideoDrawable
 import com.taoisym.akmedia.layout.Loc
 import com.taoisym.akmedia.render.TextureRender
+import com.taoisym.akmedia.video.RealSurface
+import com.taoisym.akmedia.video.VideoSence
 import glm.vec2.Vec2
 
 
 /**
  * render for video
  */
-class VideoDecorate(next: IMediaTargetSink<Unit, RealSurface>) : VideoGenerator(next) {
+class VideoSenceTest(next: IMediaTargetSink<Unit, RealSurface>) : VideoSence(next) {
     var video: VideoDrawable? = null
     var bmp: BitmapDrawable? = null
     var bmp1: BitmapDrawable? = null

@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     var sp = Supplier<RealSurface>()
     override fun onResume() {
         camera.open(false, {
-            val size = camera.parameter.supportPreviewSize.get(0)
+            val size = camera.parameter.supportPreviewSize.get(1)
             camera.parameter.previewSize = size
             test.test(camera, sp)
         })
