@@ -8,6 +8,7 @@ import com.taoisym.akmedia.R
 import com.taoisym.akmedia.codec.IMediaTargetSink
 import com.taoisym.akmedia.drawable.BitmapDrawable
 import com.taoisym.akmedia.drawable.GifDrawable
+import com.taoisym.akmedia.drawable.GifDrawable0
 import com.taoisym.akmedia.drawable.VideoDrawable
 import com.taoisym.akmedia.layout.Loc
 import com.taoisym.akmedia.render.TextureRender
@@ -23,8 +24,8 @@ class VideoSenceTest(next: IMediaTargetSink<Unit, RealSurface>) : VideoSence(nex
     var video: VideoDrawable? = null
     var bmp: BitmapDrawable? = null
     var bmp1: BitmapDrawable? = null
-    var gif: GifDrawable?=null
-    var gif1: GifDrawable?=null
+    var gif: GifDrawable0?=null
+    var gif1: GifDrawable0?=null
     val bp= GifBitmapProvider(LruBitmapPool(6))
 
     fun add(ctx: Context) {
@@ -47,10 +48,10 @@ class VideoSenceTest(next: IMediaTargetSink<Unit, RealSurface>) : VideoSence(nex
             bmp1 = BitmapDrawable(b)
             bmp1?.locShape = Loc(Vec2(-0.5, -1), Vec2(0, -0.5))
             bmp1?.prepare(mEnv)
-            gif= GifDrawable("/sdcard/gif.gif",bp)
+            gif= GifDrawable0("/sdcard/gif.gif",bp)
             gif?.locShape = Loc(Vec2(-1, -0.5), Vec2(-0.5, 0))
             gif?.prepare(mEnv)
-            gif1= GifDrawable("/sdcard/gif.gif",bp)
+            gif1= GifDrawable0("/sdcard/gif.gif",bp)
             gif1?.locShape = Loc(Vec2(-0.5, -0.5), Vec2(0, 0))
             gif1?.prepare(mEnv)
 

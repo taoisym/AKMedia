@@ -45,8 +45,9 @@ abstract class GLDrawable(val oes: Boolean) : IGLNode {
 
     open fun draw(env: GLEnv, render: TextureRender?, tr: GLTransform?) {
         val tex=texture.value
-        if (tex === null)
+        if (tex === null||tex.id<=0)
             return
+
 
         var used = render
         if (used == null) {

@@ -84,7 +84,7 @@ open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
         val eglContext = GLToolkit.eglSetup(null, true)
         env.context = eglContext
         env.resManager = ResManager(env)
-
+        env.handle=mGLHanlde!!
         mMainOutput = OutputNode(next).init(eglContext)
         mMainOutput.makeCurrent()
 
