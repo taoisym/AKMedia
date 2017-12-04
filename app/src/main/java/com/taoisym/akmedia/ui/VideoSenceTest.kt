@@ -26,7 +26,7 @@ class VideoSenceTest(next: IMediaTargetSink<Unit, RealSurface>) : VideoSence(nex
     var bmp1: BitmapDrawable? = null
     var gif: GifDrawable0?=null
     var gif1: GifDrawable0?=null
-    val bp= GifBitmapProvider(LruBitmapPool(6))
+    val bp= GifBitmapProvider(LruBitmapPool(10))
 
     fun add(ctx: Context) {
         runGLThread {

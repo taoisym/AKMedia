@@ -8,18 +8,19 @@ import com.taoisym.akmedia.render.egl.GLTexture
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
-import kotlin.concurrent.thread
 
-class GifDrawable0(val uri: String, bp: GifBitmapProvider) : TextureDrawable(false, 0, 0), PlayAble {
-    val decorer = StandardGifDecoder(bp)
+class GifDrawable0(val uri: String,val bp: GifBitmapProvider) : TextureDrawable(false, 0, 0), PlayAble {
+
     var running = false
     val cache = ArrayList<GLTexture>()
     override fun prepare(env: GLEnv) {
+        val decorer = StandardGifDecoder(bp)
         decorer.read(BufferedInputStream(FileInputStream(uri)),
                 File(uri).length().toInt())
         width = decorer.width
         height = decorer.height
         val size = decorer.frameCount
+        //assume frame rate is fixed
         super.prepare(env)
         val update = object : Runnable {
             var idx = 0
@@ -28,10 +29,11 @@ class GifDrawable0(val uri: String, bp: GifBitmapProvider) : TextureDrawable(fal
                 idx = idx + 1
                 if (idx == size)
                     idx = 0
+                decorer.advance()
                 env.handle.postDelayed(this, decorer.nextDelay.toLong())
             }
         }
-        env.resManager?.upload(Runnable {
+        env.resManager?.post(Runnable {
             for (i in 0..size-1) {
                 decorer.advance()
                 var frame = decorer.nextFrame
@@ -40,12 +42,14 @@ class GifDrawable0(val uri: String, bp: GifBitmapProvider) : TextureDrawable(fal
                 tex.update(frame)
                 cache.add(tex)
             }
-            env.resManager?.upload(update)
+            decorer.resetFrameIndex()
+            env.resManager?.post(update)
         })
     }
 
     override fun release(env: GLEnv) {
         super.release(env)
+        cache.forEach { it.release(env) }
     }
 
     override fun start() {

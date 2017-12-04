@@ -30,8 +30,11 @@ class ResManager(env: GLEnv) {
         thread.start()
     }
 
-    fun upload(fn: Runnable) {
+    fun post(fn: Runnable) {
         handle?.post(fn)
+    }
+    fun postDelay(fn: Runnable,delay:Long) {
+        handle?.postDelayed(fn,delay)
     }
 
     fun release() {
