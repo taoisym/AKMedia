@@ -7,14 +7,13 @@ import com.bumptech.glide.load.resource.gif.GifBitmapProvider
 import com.taoisym.akmedia.R
 import com.taoisym.akmedia.codec.IMediaTargetSink
 import com.taoisym.akmedia.drawable.BitmapDrawable
-import com.taoisym.akmedia.drawable.GifDrawable
 import com.taoisym.akmedia.drawable.GifDrawable0
 import com.taoisym.akmedia.drawable.VideoDrawable
 import com.taoisym.akmedia.layout.Loc
+import com.taoisym.akmedia.layout.Pos
 import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.video.RealSurface
 import com.taoisym.akmedia.video.VideoSence
-import glm.vec2.Vec2
 
 
 /**
@@ -34,7 +33,7 @@ class VideoSenceTest(next: IMediaTargetSink<Unit, RealSurface>) : VideoSence(nex
             custom.apply {
                 prepare(mEnv)
                 video = VideoDrawable("/sdcard/girl.mp4",this)
-                video?.locShape = Loc(Vec2(0.0f, 0.0f), Vec2(1f, 1f))
+                video?.locShape = Loc(Pos(0.0f, 0.0f), Pos(1f, 1f))
 
                 video?.prepare(mEnv)
                 video?.start()
@@ -43,16 +42,16 @@ class VideoSenceTest(next: IMediaTargetSink<Unit, RealSurface>) : VideoSence(nex
 
             val b = BitmapFactory.decodeResource(ctx.resources,R.raw.src)
             bmp = BitmapDrawable(b)
-            bmp?.locShape = Loc(Vec2(-1, -1), Vec2(-0.5, -0.5))
+            bmp?.locShape = Loc(Pos(-1f, -1f), Pos(-0.5f, -0.5f))
             bmp?.prepare(mEnv)
             bmp1 = BitmapDrawable(b)
-            bmp1?.locShape = Loc(Vec2(-0.5, -1), Vec2(0, -0.5))
+            bmp1?.locShape = Loc(Pos(-0.5f, -1f), Pos(0f, -0.5f))
             bmp1?.prepare(mEnv)
             gif= GifDrawable0("/sdcard/gif.gif",bp)
-            gif?.locShape = Loc(Vec2(-1, -0.5), Vec2(-0.5, 0))
+            gif?.locShape = Loc(Pos(-1f, -0.5f), Pos(-0.5f, 0f))
             gif?.prepare(mEnv)
             gif1= GifDrawable0("/sdcard/gif.gif",bp)
-            gif1?.locShape = Loc(Vec2(-0.5, -0.5), Vec2(0, 0))
+            gif1?.locShape = Loc(Pos(-0.5f, -0.5f), Pos(0f, 0f))
             gif1?.prepare(mEnv)
 
             gif?.start()

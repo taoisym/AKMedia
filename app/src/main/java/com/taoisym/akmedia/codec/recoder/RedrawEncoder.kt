@@ -16,9 +16,9 @@ import com.taoisym.akmedia.codec.NioSegment
 import com.taoisym.akmedia.codec.SegmentFormat
 import com.taoisym.akmedia.drawable.GLDrawable
 import com.taoisym.akmedia.drawable.TextureDrawable
+import com.taoisym.akmedia.render.GLEnv
 import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.render.egl.GLContext
-import com.taoisym.akmedia.render.GLEnv
 import com.taoisym.akmedia.render.egl.GLToolkit
 import java.nio.ByteBuffer
 
@@ -242,7 +242,7 @@ class RedrawEncoder : IMediaSink<PresentSegment>, IMediaSource<NioSegment, Unit>
                 Matrix.rotateM(tr_texture, 0, 90f, 0.5f, 0.5f, 0f);
                 Matrix.multiplyMM(tr_final, 0, frame.tr_texture, 0, tr_texture, 0)
                 view?.apply {
-                    mtxShape.put(tr_final)
+                    mtxShape=tr_final
                     //todo!!!
                     draw(env!!, null as TextureRender,null )
                 }

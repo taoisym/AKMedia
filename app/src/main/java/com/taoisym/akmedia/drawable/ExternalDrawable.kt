@@ -2,8 +2,8 @@ package com.taoisym.akmedia.drawable
 
 import android.graphics.SurfaceTexture
 import com.taoisym.akmedia.layout.GLTransform
-import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.render.GLEnv
+import com.taoisym.akmedia.render.TextureRender
 
 open class ExternalDrawable(width: Int, height: Int) : TextureDrawable(true, width, height) {
     var input: SurfaceTexture? = null

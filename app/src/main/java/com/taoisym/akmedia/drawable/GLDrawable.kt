@@ -5,13 +5,12 @@ import android.opengl.Matrix
 import com.taoisym.akmedia.codec.VideoDir
 import com.taoisym.akmedia.layout.GLTransform
 import com.taoisym.akmedia.layout.Loc
-import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.render.GLEnv
+import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.render.egl.GLTexture
 import com.taoisym.akmedia.render.egl.GLToolkit
 import com.taoisym.akmedia.render.egl.IGLNode
 import com.taoisym.akmedia.std.Ref
-import glm.mat4x4.Mat4
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -21,15 +20,15 @@ abstract class GLDrawable(val oes: Boolean) : IGLNode {
     var texture= Ref<GLTexture>(null)
     var locShape = Loc()
     var locTex = Loc(VideoDir.FLIP_Y)
-    var mtxShape = Mat4()
-    var mtxTex = Mat4()
+    var mtxShape = FloatArray(16)
+    var mtxTex = FloatArray(16)
 
-    val id = FloatArray(16)
 
     private val mtxCache: FloatBuffer = ByteBuffer.allocateDirect(16 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer()
 
     override fun prepare(env: GLEnv) {
-        Matrix.setIdentityM(id, 0)
+        Matrix.setIdentityM(mtxShape, 0)
+        Matrix.setIdentityM(mtxTex, 0)
     }
 
     fun update(render: TextureRender,tr: GLTransform?) {
@@ -58,15 +57,9 @@ abstract class GLDrawable(val oes: Boolean) : IGLNode {
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLES20.glBindTexture(tex.type, tex.id)
         GLToolkit.checkError()
-        mtxCache.clear()
-        mtxShape.to(mtxCache)
-        //mtxCache.flip()
-        GLES20.glUniformMatrix4fv(used.trShape, 1, false, mtxCache)
+        GLES20.glUniformMatrix4fv(used.trShape, 1, false, mtxTex,0)
         GLToolkit.checkError()
-        mtxCache.clear()
-        mtxTex.to(mtxCache)
-        //mtxCache.flip()
-        GLES20.glUniformMatrix4fv(used.trTex, 1, false, mtxCache)
+        GLES20.glUniformMatrix4fv(used.trTex, 1, false, mtxTex,0)
         GLToolkit.checkError()
         android.opengl.GLES20.glDrawArrays(android.opengl.GLES20.GL_TRIANGLE_STRIP, 0, 4)
         GLToolkit.checkError()

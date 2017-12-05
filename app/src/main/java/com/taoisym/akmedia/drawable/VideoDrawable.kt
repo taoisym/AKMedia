@@ -6,7 +6,6 @@ import com.taoisym.akmedia.codec.AvcFileMeta
 import com.taoisym.akmedia.codec.avc.MediaDecoder
 import com.taoisym.akmedia.codec.avc.MediaSource
 import com.taoisym.akmedia.layout.GLTransform
-import com.taoisym.akmedia.render.FilterRender
 import com.taoisym.akmedia.render.GLEnv
 import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.std.Lazy
