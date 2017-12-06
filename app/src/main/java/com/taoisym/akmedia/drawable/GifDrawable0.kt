@@ -11,7 +11,6 @@ import java.io.FileInputStream
 
 class GifDrawable0(val uri: String,val bp: GifBitmapProvider) : TextureDrawable(false, 0, 0), PlayAble {
 
-    var running = false
     val cache = ArrayList<GLTexture>()
     override fun prepare(env: GLEnv) {
         val decorer = StandardGifDecoder(bp)

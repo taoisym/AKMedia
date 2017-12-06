@@ -19,11 +19,15 @@ class SurfaceTarget(val surface: Supplier<RealSurface>) : IMediaTargetSink<Unit,
     override fun prepare() {
     }
 
-    override fun setFormat(ctx: Any, format: SegmentFormat): Any? {
-        this.format=SegmentFormat(format)
+    override fun setFormat(ctx: Any, informat: SegmentFormat): Any? {
+        this.format=SegmentFormat(informat)
         val real=surface.get()
-        paddingBottom =real.height-format.height
-        transform.setWindowLayout(real.width,real.height,paddingTop,paddingBottom)
+        val height=(real.width* informat.height*1.0/ informat.width).toInt()
+        paddingBottom =real.height-height
+
+        format.width=real.width
+        format.height=height
+        transform.setWindowLayout(real.width,height,paddingTop,paddingBottom)
 
         return null
     }

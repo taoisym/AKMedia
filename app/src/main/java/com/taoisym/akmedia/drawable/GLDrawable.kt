@@ -23,9 +23,6 @@ abstract class GLDrawable(val oes: Boolean) : IGLNode {
     var mtxShape = FloatArray(16)
     var mtxTex = FloatArray(16)
 
-
-    private val mtxCache: FloatBuffer = ByteBuffer.allocateDirect(16 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer()
-
     override fun prepare(env: GLEnv) {
         Matrix.setIdentityM(mtxShape, 0)
         Matrix.setIdentityM(mtxTex, 0)
