@@ -21,17 +21,17 @@ class VideoDrawable(val uri: String,val custom: TextureRender) : ExternalDrawabl
         width = meta.width
         height = meta.height
         super.prepare(env)
+
+        val lazy = object : Lazy<SurfaceTexture>() {
+            override fun refid() = input
+        }
+        mDecoder = MediaSource(MediaSource.CONTINUE, MediaSource.CONTINUE)
+        mDecoder.addSink(MediaDecoder(null, lazy), 0)
+        mDecoder.emit(uri)
     }
 
 
     override fun start() {
-        val lazy = object : Lazy<SurfaceTexture>() {
-            override fun refid() = input
-        }
-
-        mDecoder = MediaSource(MediaSource.CONTINUE, MediaSource.CONTINUE)
-        mDecoder.addSink(MediaDecoder(null, lazy), 0)
-        mDecoder.emit(uri)
         mDecoder.start()
 
     }

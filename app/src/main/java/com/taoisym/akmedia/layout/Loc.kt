@@ -8,10 +8,6 @@ import java.nio.FloatBuffer
 
 class Loc {
     private var tex = false
-    /**
-     * 0 X=1 Y=2 XY=3
-     * Video=2,BackCamera=1,FrontCamera=3
-     */
     private var flipXY: VideoDir = VideoDir.FLIP_Y
     private var rotate: Boolean = false
     private var hwRatio: Float = 1f
@@ -25,11 +21,12 @@ class Loc {
     }
 
     /**
-     *              Mp4Video FrontCamera BackCamera
-     * flipXY :     2        3            1
-     * rotate:      false    true        true
+     * constructor for texture
+     *              Mp4Video                FrontCamera         BackCamera
+     * flipXY :     VideoDir.FLIP_Y         VideoDir.FLIP_XY    VideoDir.FLIP_X
+     * rotation:    false                   true                true
      *
-     * center crop fill view
+     * default layout @center crop@ if source and view (Height/Width) ratio not eq
      * hwRatio=     (viewH/W)/(srcH/W)
      */
     constructor(flipXY: VideoDir, rotate: Boolean = false, hwRatio: Float = 1f) {

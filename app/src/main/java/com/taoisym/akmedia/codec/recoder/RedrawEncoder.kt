@@ -214,7 +214,7 @@ class RedrawEncoder : IMediaSink<PresentSegment>, IMediaSource<NioSegment, Unit>
     internal fun createInputSurface(width: Int, height: Int) {
         env = GLEnv()
 
-        context = GLContext(null, GLContext.FLAG_RECORDABLE)
+        context = GLContext(null, GLContext.FLAG_RECORDABLE or GLContext.FLAG_TRY_GLES3)
         out = context!!.createWindowSurface(encoderSurface)
         out!!.makeCurrent()
         render = TextureRender()

@@ -10,7 +10,7 @@ android {
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "android.support.camera.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -18,7 +18,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    packagingOptions{
+    packagingOptions {
         exclude 'META-INF/build_main.kotlin_module'
     }
 }
@@ -41,4 +41,7 @@ dependencies {
 repositories {
     mavenCentral()
 
+}
+dependencies {
+    implementation 'com.android.support.constraint:constraint-layout:+'
 }

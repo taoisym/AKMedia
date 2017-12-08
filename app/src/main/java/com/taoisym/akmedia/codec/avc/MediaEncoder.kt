@@ -150,12 +150,12 @@ class MediaEncoder(private var next: IMediaSink<NioSegment>) : IMediaSink<NioSeg
     }
 
     /**
-     * Returns true if this is a color format that this test code understands (i.e. we know how
+     * Returns true if this is a color format that this camera code understands (i.e. we know how
      * to read and generate frames in this format).
      */
     private fun isRecognizedFormat(colorFormat: Int): Boolean {
         when (colorFormat) {
-        // these are the formats we know how to handle for this test
+        // these are the formats we know how to handle for this camera
             MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420PackedPlanar, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420PackedSemiPlanar, MediaCodecInfo.CodecCapabilities.COLOR_TI_FormatYUV420PackedSemiPlanar -> return true
             else -> return false
         }

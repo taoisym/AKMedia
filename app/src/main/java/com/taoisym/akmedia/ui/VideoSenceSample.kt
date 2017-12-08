@@ -19,7 +19,7 @@ import com.taoisym.akmedia.video.VideoSence
 /**
  * render for video
  */
-class VideoSenceTest(next: IMediaTargetSink<Unit, RealSurface>) : VideoSence(next) {
+class VideoSenceSample(next: IMediaTargetSink<Unit, RealSurface>) : VideoSence(next) {
     var video: VideoDrawable? = null
     var bmp: BitmapDrawable? = null
     var bmp1: BitmapDrawable? = null

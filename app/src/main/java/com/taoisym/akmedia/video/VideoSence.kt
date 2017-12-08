@@ -49,6 +49,7 @@ open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
         get() = mInputTarget
 
     override fun prepare() {
+        mEglThread = EglThread()
     }
 
     fun setFilter(render: TextureRender) {
@@ -59,14 +60,9 @@ open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
         }
     }
 
-
-
-
-
     override fun setFormat(ctx: Any, format: SegmentFormat): Any? {
         mEnv = ctx as GLEnv
         mInFormat=format
-        mEglThread = EglThread()
         mEglThread?.start()
         return true
     }
@@ -170,10 +166,12 @@ open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
         }
         private fun prepareInGL() {
             val env=mEnv
+            var rotate=false
             if (mInFormat.rotation == 90 || mInFormat.rotation == 180) {
                 val swap = mInFormat.width
                 mInFormat.width = mInFormat.height
                 mInFormat.height = swap
+                rotate=true
             }
             mOutFormat =SegmentFormat(mInFormat)
             mOutFormat.height=mOutFormat.width
@@ -200,7 +198,7 @@ open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
             mFilterRender.prepare(env)
 
             mSrcDrawable = ExternalDrawable(mInFormat.width, mInFormat.height)
-            mSrcDrawable.locTex= Loc(mInFormat.dir,true,mInFormat.height*1f/mInFormat.width
+            mSrcDrawable.locTex= Loc(mInFormat.dir,rotate,mInFormat.height*1f/mInFormat.width
                     /(mOutFormat.height*1.0f/mOutFormat.width))
 
             mCahceDrawable = TextureDrawable(false, mOutFormat.width, mOutFormat.height)

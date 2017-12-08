@@ -13,7 +13,7 @@ class ResManager(env: GLEnv) {
             super.onLooperPrepared()
             handle=Handler(looper)
             env.context.let {
-                resCtx = GLContext(it.context, 0)
+                resCtx = GLContext(it.context, GLContext.FLAG_TRY_GLES3)
                 resCtx?.makeCurrent(EGL14.EGL_NO_SURFACE)
             }
         }

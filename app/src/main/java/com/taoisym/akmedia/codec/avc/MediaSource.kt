@@ -101,7 +101,7 @@ class MediaSource(private val startState: Int, private var endState: Int) : IMed
                 }
             }
         }, "MediaSource").start()
-        waitor.block()
+        //waitor.block()
     }
 
     override fun stop() {
