@@ -53,7 +53,7 @@ class UseageSample {
         }
         val video = MediaSource(MediaSource.CONTINUE, MediaSource.CONTINUE)
         video.addSink(MediaDecoder(null, lazy), 0)
-        //video.addSink(MediaDecoder(AacPlayer(),null), 1)
+        video.addSink(MediaDecoder(AacPlayer(),null), 1)
         video.emit(uri)
         video.start()
     }

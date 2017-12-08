@@ -4,7 +4,7 @@ import com.taoisym.akmedia.codec.IMediaSink
 import com.taoisym.akmedia.codec.SegmentFormat
 
 
-class NoopPhase<T> : IMediaSink<T> {
+class NoopSink<T> : IMediaSink<T> {
 
 
     override fun prepare() {

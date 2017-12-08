@@ -44,9 +44,14 @@ class CameraDriveActivity : AppCompatActivity() {
     var sp = Supplier<RealSurface>()
     override fun onResume() {
         camera.open(false, {
-            val size = camera.parameter.supportPreviewSize.get(1)
-            camera.parameter.previewSize = size
-            test.camera(camera, sp)
+            succ->
+            if(succ) {
+                val size = camera.parameter.supportPreviewSize.get(1)
+                camera.parameter.previewSize = size
+                test.camera(camera, sp)
+            }else{
+                
+            }
         })
 
         super.onResume()

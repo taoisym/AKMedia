@@ -89,7 +89,7 @@ class AacPlayer : IMediaSink<NioSegment> {
         //int  bitrate = format.getInteger(MediaFormat.KEY_BIT_RATE);
 
         val bufsize = AudioTrack.getMinBufferSize(format.sample, out,
-                enc) * 4
+                enc) * 2
         //        Log.e("audio:", bufsize + "bytes buffer");
 
         track = AudioTrack(AudioManager.STREAM_MUSIC, format.sample, out,

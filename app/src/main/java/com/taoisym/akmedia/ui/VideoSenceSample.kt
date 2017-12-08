@@ -40,17 +40,20 @@ class VideoSenceSample(next: IMediaTargetSink<Unit, RealSurface>) : VideoSence(n
             }
 
 
-            val b = BitmapFactory.decodeResource(ctx.resources,R.raw.src)
-            bmp = BitmapDrawable(b)
+            val s0 = BitmapFactory.decodeResource(ctx.resources,R.raw.s0)
+            bmp = BitmapDrawable(s0)
             bmp?.locShape = Loc(Pos(-1f, -1f), Pos(-0.5f, -0.5f))
             bmp?.prepare(mEnv)
-            bmp1 = BitmapDrawable(b)
+            s0.recycle()
+            val s1 = BitmapFactory.decodeResource(ctx.resources,R.raw.s1)
+            bmp1 = BitmapDrawable(s1)
             bmp1?.locShape = Loc(Pos(-0.5f, -1f), Pos(0f, -0.5f))
             bmp1?.prepare(mEnv)
-            gif= GifDrawable0("/sdcard/gif.gif",bp)
+            s1.recycle()
+            gif= GifDrawable0("/sdcard/2.gif",bp)
             gif?.locShape = Loc(Pos(-1f, -0.5f), Pos(-0.5f, 0f))
             gif?.prepare(mEnv)
-            gif1= GifDrawable0("/sdcard/gif.gif",bp)
+            gif1= GifDrawable0("/sdcard/1.gif",bp)
             gif1?.locShape = Loc(Pos(-0.5f, -0.5f), Pos(0f, 0f))
             gif1?.prepare(mEnv)
 

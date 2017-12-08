@@ -182,7 +182,7 @@ class MediaDecoder @JvmOverloads constructor(protected var next: IMediaSink<NioS
     }
 
     companion object {
-        private val DEFAULT_VIDEO_DECODE_WAIT_TIME = 50000
+        private val DEFAULT_VIDEO_DECODE_WAIT_TIME = 10000
     }
 
 }

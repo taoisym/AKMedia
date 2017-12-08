@@ -6,7 +6,7 @@ import com.taoisym.akmedia.codec.Segment
 import com.taoisym.akmedia.codec.SegmentFormat
 
 
-class DispatcherPass<T : Segment<*>>(internal var sink0: IMediaSink<T>, internal var sink1: IMediaSink<T>) : IMediaSink<T>, IMediaSource<T, Unit> {
+class PassNext<T : Segment<*>>(internal var sink0: IMediaSink<T>, internal var sink1: IMediaSink<T>) : IMediaSink<T>, IMediaSource<T, Unit> {
 
     override fun prepare() {
         sink0.prepare()
