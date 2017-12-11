@@ -7,14 +7,11 @@ import android.media.MediaCodecList
 import android.media.MediaFormat
 import android.os.Build
 import android.os.Bundle
-import com.taoisym.akmedia.codec.IMediaSink
-import com.taoisym.akmedia.codec.IMediaSource
-import com.taoisym.akmedia.codec.NioSegment
-import com.taoisym.akmedia.codec.SegmentFormat
+import com.taoisym.akmedia.codec.*
 import java.nio.ByteBuffer
 
 
-class MediaEncoder(private var next: IMediaSink<NioSegment>) : IMediaSink<NioSegment>, IMediaSource<NioSegment, Unit> {
+class MediaEncoder(private var next: IMediaSink<NioSegment>) : IMediaSurfaceSink, IMediaSource<NioSegment, Unit> {
     internal var encoder: MediaCodec? = null
     internal var tracking: Boolean = false
     private var inputs: Array<ByteBuffer>? = null

@@ -5,6 +5,7 @@ import android.media.AudioManager
 import android.media.AudioTrack
 import android.os.Build
 import com.taoisym.akmedia.codec.IMediaSink
+import com.taoisym.akmedia.codec.IMediaSurfaceSink
 import com.taoisym.akmedia.codec.NioSegment
 import com.taoisym.akmedia.codec.SegmentFormat
 import java.nio.ByteBuffer
@@ -12,7 +13,7 @@ import java.util.*
 
 
 
-class AacPlayer : IMediaSink<NioSegment> {
+class AacPlayer : IMediaSurfaceSink {
 
     protected var track: AudioTrack? = null
     protected var mute: Boolean = false

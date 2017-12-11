@@ -2,12 +2,12 @@ package com.taoisym.akmedia.codec.chain
 
 import com.taoisym.akmedia.codec.IMediaSink
 import com.taoisym.akmedia.codec.IMediaSource
-import com.taoisym.akmedia.codec.IMediaTargetSink
+import com.taoisym.akmedia.codec.IMediaTarget
 import com.taoisym.akmedia.codec.SegmentFormat
 
 
-open class Passer<T>(internal var next: IMediaSink<T>) : IMediaSink<T>, IMediaSource<T, Unit> {
-    override fun addSink(pass: IMediaTargetSink<T, Unit>, flag: Int) {
+open class Passer<Input,Target>(internal var next: IMediaTarget<Input,Target>) : IMediaTarget<Input,Target>, IMediaSource<Input, Target> {
+    override fun addSink(pass: IMediaTarget<Input, Target>, flag: Int) {
 
     }
 
@@ -24,7 +24,7 @@ open class Passer<T>(internal var next: IMediaSink<T>) : IMediaSink<T>, IMediaSo
         return null
     }
 
-    override fun emit(o: T): Boolean {
+    override fun emit(o: Input): Boolean {
         return next.emit(o)
     }
 

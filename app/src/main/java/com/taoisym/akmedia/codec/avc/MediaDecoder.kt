@@ -7,10 +7,7 @@ import android.media.MediaFormat
 import android.os.Build
 import android.support.annotation.RequiresApi
 import android.view.Surface
-import com.taoisym.akmedia.codec.IMediaSink
-import com.taoisym.akmedia.codec.IMediaSource
-import com.taoisym.akmedia.codec.NioSegment
-import com.taoisym.akmedia.codec.SegmentFormat
+import com.taoisym.akmedia.codec.*
 import com.taoisym.akmedia.std.Lazy
 import com.taoisym.akmedia.std.Stats
 import java.nio.ByteBuffer
@@ -18,9 +15,9 @@ import java.nio.ByteOrder
 
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-class MediaDecoder @JvmOverloads constructor(protected var next: IMediaSink<NioSegment>?, private val texture: Lazy<SurfaceTexture>? = null) : IMediaSink<NioSegment>, IMediaSource<NioSegment, Unit> {
+class MediaDecoder @JvmOverloads constructor(protected val next: IMediaSurfaceSink) : IMediaSurfaceSink, IMediaSource<NioSegment, SurfaceTexture> {
     private var output: Surface? = null
-    private val present: Boolean
+    private var present: Boolean=false
     private lateinit var extractor: MediaExtractor
     private var decoder: MediaCodec? = null
     private var info = MediaCodec.BufferInfo()
@@ -33,10 +30,6 @@ class MediaDecoder @JvmOverloads constructor(protected var next: IMediaSink<NioS
     private var jumpTo: Long = 0
     private var decoderWaitTime = DEFAULT_VIDEO_DECODE_WAIT_TIME
 
-
-    init {
-        this.present = if (texture == null) false else true
-    }
 
     override fun emit(data: NioSegment): Boolean {
         var ret = false
@@ -144,7 +137,13 @@ class MediaDecoder @JvmOverloads constructor(protected var next: IMediaSink<NioS
         try {
             val decoder = MediaCodec.createDecoderByType(mime)
             this.decoder = decoder
-            output = if (texture == null) null else Surface(texture.get())
+            try{
+                //no target should throw exception
+                output = Surface(next.target.get())
+                this.present = true
+            }catch (e:NotImplementedError){
+
+            }
             decoder.configure(fmt, output, null, 0 /* Decoder */)
             decoder.start()
             inputs = decoder.inputBuffers
@@ -177,8 +176,8 @@ class MediaDecoder @JvmOverloads constructor(protected var next: IMediaSink<NioS
         }
     }
 
-    override fun addSink(sink: IMediaSink<NioSegment>, flag: Int) {
-        next = sink
+    override fun addSink(sink: IMediaSurfaceSink, flag: Int) {
+//        next = sink
     }
 
     companion object {

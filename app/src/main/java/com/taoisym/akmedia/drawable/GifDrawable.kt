@@ -1,71 +1,75 @@
 package com.taoisym.akmedia.drawable
 
+import android.opengl.GLES20
 import com.bumptech.glide.gifdecoder.StandardGifDecoder
 import com.bumptech.glide.load.resource.gif.GifBitmapProvider
 import com.taoisym.akmedia.render.GLEnv
+import com.taoisym.akmedia.render.egl.GLTexture
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
-import kotlin.concurrent.thread
 
-class GifDrawable(val uri:String,bp:GifBitmapProvider):TextureDrawable(false,0,0),PlayAble
-{
-    val decorer= StandardGifDecoder(bp)
-    var thread:Thread?=null
-    var lock=java.lang.Object()
-    var running=false
+class GifDrawable(val uri: String, val bp: GifBitmapProvider) : GLDrawable(false), PlayAble {
+    private val mCache = ArrayList<GLTexture>()
+    private lateinit var start: () -> Unit
+    private lateinit var stop: () -> Unit
     override fun prepare(env: GLEnv) {
-        decorer.read(BufferedInputStream(FileInputStream(uri)),
-                File(uri).length().toInt())
-        width=decorer.width
-        height=decorer.height
         super.prepare(env)
-        thread=thread {
+        env.postResource {
+            val decorer = StandardGifDecoder(bp)
+            decorer.read(BufferedInputStream(FileInputStream(uri)),
+                    File(uri).length().toInt())
+            val width = decorer.width
+            val height = decorer.height
+            val size = decorer.frameCount
 
-            while (true) {
-                synchronized(lock) {
-                    while (running==false)
-                        lock.wait()
-                }
-                try {
+            (0 until size).forEach {
+                decorer.advance()
+                var frame = decorer.nextFrame
+                val tex = GLTexture(GLES20.GL_TEXTURE_2D, width, height)
+                tex.prepare(env)
+                tex.update(frame)
+                mCache.add(tex)
+            }
+            decorer.resetFrameIndex()
+            var idx = 0
+            val update: Runnable = object : Runnable {
+                override fun run() {
+                    texture.value = mCache[idx]
+                    idx = idx + 1
+                    if (idx == size)
+                        idx = 0
                     decorer.advance()
-                    var frame=decorer.nextFrame
-                    if(frame==null){
-                        decorer.resetFrameIndex()
-                    }else{
-                        env.resManager?.post(Runnable {
-                            texture.value?.update(frame)
-                        })
-                        Thread.sleep(decorer.nextDelay.toLong())
-                    }
-                }catch (e:Exception){
-                    e.printStackTrace()
+                    env.postRender(this, decorer.nextDelay.toLong())
                 }
+            }
+            start = {
+                env.postRender(update, 0)
+            }
+            stop = {
+                env.removeRenderFunc(update)
             }
         }
     }
 
     override fun release(env: GLEnv) {
         super.release(env)
-        thread?.interrupt()
+        env.postResource {
+            mCache.forEach { it.release(env) }
+        }
     }
 
     override fun start() {
-        synchronized(lock){
-            running=true
-            lock.notifyAll()
-        }
+        start.invoke()
     }
 
     override fun stop() {
-        thread?.interrupt()
+        stop.invoke()
+        texture.value = null
     }
 
     override fun pause() {
-        synchronized(lock){
-            running=false
-            lock.notifyAll()
-        }
+        stop.invoke()
     }
 
     override fun resume() {

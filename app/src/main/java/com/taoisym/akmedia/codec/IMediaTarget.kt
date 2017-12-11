@@ -1,9 +1,10 @@
 package com.taoisym.akmedia.codec
 
+import android.graphics.SurfaceTexture
 import com.taoisym.akmedia.std.Supplier
 
 
-interface IMediaTargetSink<Data, Target> {
+interface IMediaTarget<Input, Target> {
 
     val format: SegmentFormat
         get() = TODO()
@@ -13,10 +14,12 @@ interface IMediaTargetSink<Data, Target> {
     fun prepare()
 
     fun setFormat(ctx: Any, format: SegmentFormat): Any?
-    fun forward(data: Data){}
-    fun emit(data: Data): Boolean
+    fun forward(data: Input){}
+    fun emit(data: Input): Boolean
     fun release()
     fun seek(pts: Long, flag: Int) {}
 }
-typealias  IMediaSink<Data> = IMediaTargetSink<Data, Unit>
+typealias  IMediaSurfaceSink = IMediaTarget<NioSegment, SurfaceTexture>
+
+typealias  IMediaSink<Input> = IMediaTarget<Input, Unit>
 

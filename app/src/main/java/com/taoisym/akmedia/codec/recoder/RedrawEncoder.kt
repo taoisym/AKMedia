@@ -10,10 +10,7 @@ import android.os.Bundle
 import android.os.ConditionVariable
 import android.os.Handler
 import android.view.Surface
-import com.taoisym.akmedia.codec.IMediaSink
-import com.taoisym.akmedia.codec.IMediaSource
-import com.taoisym.akmedia.codec.NioSegment
-import com.taoisym.akmedia.codec.SegmentFormat
+import com.taoisym.akmedia.codec.*
 import com.taoisym.akmedia.drawable.GLDrawable
 import com.taoisym.akmedia.drawable.TextureDrawable
 import com.taoisym.akmedia.render.GLEnv
@@ -23,19 +20,19 @@ import com.taoisym.akmedia.render.egl.GLToolkit
 import java.nio.ByteBuffer
 
 
-class RedrawEncoder : IMediaSink<PresentSegment>, IMediaSource<NioSegment, Unit> {
+class RedrawEncoder : IMediaSink<PresentSegment>, IMediaSource<NioSegment, SurfaceTexture> {
 
     private var mUseWidthLimit: Boolean = false
     private var mUseHeightLimit: Boolean = false
     private var mHeightLimit: Int = 0
     private var mWidthLimit: Int = 0
-    internal var next: IMediaSink<NioSegment>
+    internal var next: IMediaSurfaceSink
     internal var encoder: MediaCodec? = null
     internal var tracking: Boolean = false
     private var output: Array<ByteBuffer>? = null
     private val info = MediaCodec.BufferInfo()
 
-    //video only
+    //mVideo only
     private var inputSurface: SurfaceTexture? = null
     private var encoderSurface: Surface? = null
     private var encHandle: Handler? = null
@@ -60,13 +57,13 @@ class RedrawEncoder : IMediaSink<PresentSegment>, IMediaSource<NioSegment, Unit>
             return inputSurface
         }
 
-    constructor(next: IMediaSink<NioSegment>, encHandle: Handler) {
+    constructor(next: IMediaSurfaceSink, encHandle: Handler) {
         this.next = next
         this.encHandle = encHandle
         param.putInt(MediaCodec.PARAMETER_KEY_REQUEST_SYNC_FRAME, 0)
     }
 
-    constructor(next: IMediaSink<NioSegment>, encHandle: Handler, widthLimit: Int, heightLimit: Int) {
+    constructor(next: IMediaSurfaceSink, encHandle: Handler, widthLimit: Int, heightLimit: Int) {
         this.next = next
         this.encHandle = encHandle
         param.putInt(MediaCodec.PARAMETER_KEY_REQUEST_SYNC_FRAME, 0)
@@ -183,7 +180,7 @@ class RedrawEncoder : IMediaSink<PresentSegment>, IMediaSource<NioSegment, Unit>
 
     }
 
-    override fun addSink(sink: IMediaSink<NioSegment>, flag: Int) {
+    override fun addSink(sink:IMediaSurfaceSink, flag: Int) {
         this.next = sink
     }
 

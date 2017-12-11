@@ -1,5 +1,6 @@
 package com.taoisym.akmedia.codec.avc
 
+import android.graphics.SurfaceTexture
 import android.media.MediaCodec
 import android.media.MediaExtractor
 import android.media.MediaFormat
@@ -16,11 +17,11 @@ import java.util.concurrent.locks.ReentrantLock
  *
  */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-class MediaSource(private val startState: Int, private var endState: Int) : IMediaSource<NioSegment, Unit>, IMediaSink<String>, IMediaControl {
+class MediaSource(private val startState: Int, private var endState: Int) : IMediaSource<NioSegment, SurfaceTexture>, IMediaSink<String>, IMediaControl {
 
 
     protected lateinit var extractor: MediaExtractor
-    protected lateinit var fastLookup: Array<IMediaSink<NioSegment>?>
+    protected lateinit var fastLookup: Array<IMediaSurfaceSink?>
     protected var crypto = MediaCodec.CryptoInfo()
     //volatile boolean loop = false;
     @Volatile
@@ -31,15 +32,15 @@ class MediaSource(private val startState: Int, private var endState: Int) : IMed
 
     protected var fileMeta: AvcFileMeta? = null
     private var mediaPath: String? = null
-    private var video: IMediaSink<NioSegment>? = null
+    private var video: IMediaSurfaceSink? = null
     private var videoIdx = -1
     private var audioIdx = -1
-    private var audio: IMediaSink<NioSegment>? = null
+    private var audio: IMediaSurfaceSink? = null
     @Volatile private var jumpPts: Long = -1
     private var l: IMediaStateListener? = null
     private var seekDir = MediaExtractor.SEEK_TO_NEXT_SYNC
 
-    override val metainfo: AvcFileMeta?
+    override val metaInfo: AvcFileMeta?
         get() = initMedia(false)
     internal var memo = NioSegment(null)
 
@@ -145,15 +146,15 @@ class MediaSource(private val startState: Int, private var endState: Int) : IMed
         extractor = MediaExtractor()
         try {
             extractor.setDataSource(mediaPath!!)
-            fastLookup = arrayOfNulls<IMediaSink<NioSegment>>(extractor.trackCount + 1)
+            fastLookup = arrayOfNulls<IMediaSurfaceSink>(extractor.trackCount + 1)
             for (i in 0 until extractor!!.trackCount) {
                 val format = extractor!!.getTrackFormat(i)
                 val mine = format.getString(MediaFormat.KEY_MIME)
-                val type = if (mine.startsWith("video/")) 0 else if (mine.startsWith("audio/")) 1 else -1
+                val type = if (mine.startsWith("mVideo/")) 0 else if (mine.startsWith("audio/")) 1 else -1
                 if (type == -1)
                     continue
 
-                var wrap: IMediaSink<NioSegment>? = null
+                var wrap: IMediaSurfaceSink? = null
                 if (type == 0) {
                     wrap = video
                     video = null
@@ -253,7 +254,7 @@ class MediaSource(private val startState: Int, private var endState: Int) : IMed
                         Stats.print("Push " + this)
 
                         /**
-                         * only save video last pts value
+                         * only save mVideo last pts value
                          */
                         val pts = extractor!!.sampleTime
                         memo.pts = pts
@@ -336,7 +337,7 @@ class MediaSource(private val startState: Int, private var endState: Int) : IMed
     }
 
     /**
-     * this fun only seek,will not goto next video frame,now used for audio play
+     * this fun only seek,will not goto next mVideo frame,now used for audio play
      *
      * @param pts
      * @param flag
@@ -349,14 +350,13 @@ class MediaSource(private val startState: Int, private var endState: Int) : IMed
     override fun seek(pts: Long) {
         if (pts >= from && pts <= to) {
             jumpPts = pts
-            //Log.e("Last","Last set pts="+pts);
             if (state == PAUSE) {
                 stateLock.unlock()
             }
         }
     }
 
-    override fun addSink(sink: IMediaSink<NioSegment>, flag: Int) {
+    override fun addSink(sink: IMediaSurfaceSink, flag: Int) {
         assert(flag >= 0 && flag <= 2)
         if (flag == 0) {
             video = sink

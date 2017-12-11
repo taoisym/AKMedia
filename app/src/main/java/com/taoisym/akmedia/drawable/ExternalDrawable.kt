@@ -1,33 +1,37 @@
 package com.taoisym.akmedia.drawable
 
-import android.graphics.SurfaceTexture
+import com.taoisym.akmedia.codec.IMediaSurfaceSink
+import com.taoisym.akmedia.codec.NioSegment
+import com.taoisym.akmedia.codec.SegmentFormat
 import com.taoisym.akmedia.layout.GLTransform
 import com.taoisym.akmedia.render.GLEnv
 import com.taoisym.akmedia.render.TextureRender
 
-open class ExternalDrawable(width: Int, height: Int) : TextureDrawable(true, width, height) {
-    var input: SurfaceTexture? = null
-        get() = field
-        private set(value) {
-            field = value
-        }
+open class ExternalDrawable(width: Int, height: Int) : TextureDrawable(true, width, height), IMediaSurfaceSink {
+    override fun prepare() {
 
-    override fun prepare(env: GLEnv) {
-        super.prepare(env)
-        if(texture.value!=null)
-            input = SurfaceTexture(texture.value!!.id)
+    }
+
+    override fun setFormat(ctx: Any, format: SegmentFormat): Any? {
+        return null
+    }
+
+    override fun release() {
+    }
+
+    override fun emit(data: NioSegment): Boolean {
+        return false
     }
 
     override fun draw(env: GLEnv, render: TextureRender?, tr: GLTransform?) {
-        input?.run {
+        target.value()?.run {
             updateTexImage()
-            super.draw(env, render,null )
+            super.draw(env, render, null)
         }
     }
 
     override fun release(env: GLEnv) {
         super.release(env)
-        input?.release()
-        input = null
+        target.value()?.release()
     }
 }

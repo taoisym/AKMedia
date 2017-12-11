@@ -5,7 +5,9 @@ import com.taoisym.akmedia.render.GLEnv
 
 class BitmapDrawable(val bmp: Bitmap) : TextureDrawable(false, bmp.width, bmp.height) {
     override fun prepare(env: GLEnv) {
-        super.prepare(env)
-        texture.value?.update(bmp)
+        env.postRender {
+            super.prepare(env)
+            texture.value?.update(bmp)
+        }
     }
 }

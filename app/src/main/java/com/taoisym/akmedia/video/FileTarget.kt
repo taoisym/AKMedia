@@ -8,7 +8,7 @@ import com.taoisym.akmedia.codec.*
 import com.taoisym.akmedia.std.Supplier
 import java.nio.ByteBuffer
 
-class FileTarget(val next: IMediaSink<NioSegment>) : IMediaTargetSink<Unit, RealSurface>, IMediaSource<NioSegment, Unit> {
+class FileTarget(val next: IMediaSink<NioSegment>) : IMediaTarget<Unit, RealSurface>, IMediaSource<NioSegment, Unit> {
 
     private var input: Surface? = null
     private var enc: MediaCodec? = null
@@ -61,7 +61,7 @@ class FileTarget(val next: IMediaSink<NioSegment>) : IMediaTargetSink<Unit, Real
 
     }
 
-    override fun addSink(next: IMediaTargetSink<NioSegment, Unit>, flag: Int) = TODO()
+    override fun addSink(next: IMediaTarget<NioSegment, Unit>, flag: Int) = TODO()
 
     private fun queryOutput(): Boolean {
         var got = false

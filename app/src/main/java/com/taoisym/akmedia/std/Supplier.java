@@ -14,8 +14,10 @@ public class Supplier<T> {
 
         }
     }
-
-    final public T get() {
+    final public T value(){
+        return val;
+    }
+    public T get() {
         if (val != null)
             return val;
         synchronized (this) {

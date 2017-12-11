@@ -1,16 +1,16 @@
 package com.taoisym.akmedia.video
 
 import android.opengl.GLES20
-import com.taoisym.akmedia.codec.IMediaTargetSink
+import com.taoisym.akmedia.codec.IMediaTarget
 import com.taoisym.akmedia.codec.SegmentFormat
 import com.taoisym.akmedia.layout.GLTransform
 import com.taoisym.akmedia.std.Supplier
 
 
 /**
- * render for multi video
+ * render for multi mVideo
  */
-class SurfaceTarget(val surface: Supplier<RealSurface>) : IMediaTargetSink<Unit, RealSurface> {
+class SurfaceTarget(val surface: Supplier<RealSurface>) : IMediaTarget<Unit, RealSurface> {
     override val target = surface
     private var paddingBottom:Int=0
     private var paddingTop:Int=0

@@ -48,12 +48,9 @@ class UseageSample {
         vg?.prepare()
         vg?.setFormat(context, fmt)
 
-        val lazy = object : Lazy<SurfaceTexture>() {
-            override fun refid() = vg?.target?.get()?:null
-        }
         val video = MediaSource(MediaSource.CONTINUE, MediaSource.CONTINUE)
-        video.addSink(MediaDecoder(null, lazy), 0)
-        video.addSink(MediaDecoder(AacPlayer(),null), 1)
+        video.addSink(MediaDecoder(vg!!), 0)
+        video.addSink(MediaDecoder(AacPlayer()), 1)
         video.emit(uri)
         video.start()
     }

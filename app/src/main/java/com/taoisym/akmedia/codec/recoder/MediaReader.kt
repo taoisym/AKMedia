@@ -1,14 +1,11 @@
 package com.taoisym.akmedia.codec.recoder
 
 import android.media.MediaExtractor
-import com.taoisym.akmedia.codec.IMediaSink
-import com.taoisym.akmedia.codec.IMediaSource
-import com.taoisym.akmedia.codec.NioSegment
-import com.taoisym.akmedia.codec.SegmentFormat
+import com.taoisym.akmedia.codec.*
 import java.nio.ByteBuffer
 
 
-class MediaReader(private var next: IMediaSink<NioSegment>) : IMediaSink<NioSegment>, IMediaSource<NioSegment, Unit> {
+class MediaReader(private var next: IMediaSink<NioSegment>) : IMediaSurfaceSink, IMediaSource<NioSegment, Unit> {
     private lateinit var extractor: MediaExtractor
     private var buffer: ByteBuffer? = null
     private var fmt: SegmentFormat? = null

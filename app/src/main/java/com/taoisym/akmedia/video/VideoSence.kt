@@ -4,15 +4,11 @@ import android.graphics.SurfaceTexture
 import android.opengl.GLES20
 import android.os.Handler
 import android.os.HandlerThread
-import com.taoisym.akmedia.codec.IMediaSource
-import com.taoisym.akmedia.codec.IMediaTargetSink
-import com.taoisym.akmedia.codec.SegmentFormat
+import com.taoisym.akmedia.codec.*
 import com.taoisym.akmedia.drawable.ExternalDrawable
 import com.taoisym.akmedia.drawable.TextureDrawable
-import com.taoisym.akmedia.layout.GLTransform
 import com.taoisym.akmedia.layout.Loc
 import com.taoisym.akmedia.render.GLEnv
-import com.taoisym.akmedia.render.ResManager
 import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.render.egl.GLContext
 import com.taoisym.akmedia.render.egl.GLFbo
@@ -21,21 +17,21 @@ import com.taoisym.akmedia.std.Supplier
 
 
 /**
- * render for video
+ * render for mVideo
  */
-open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
-        IMediaTargetSink<Unit, SurfaceTexture>,
+open class VideoSence(private val next: IMediaTarget<Unit, RealSurface>) :
+        IMediaSurfaceSink,
         IMediaSource<Unit, RealSurface> {
 
     private var mInputTarget = Supplier<SurfaceTexture>()
 
+    lateinit var context: GLContext
     private lateinit var mFilterDrawable: TextureDrawable
     private lateinit var mFilterRender: TextureRender
 
     private var mEglThread: HandlerThread? = null
     private var mGLHandle: Handler? = null
     protected lateinit var mEnv: GLEnv
-    protected lateinit var mTranform: GLTransform
 
     private lateinit var mInFormat: SegmentFormat
     private lateinit var mOutFormat: SegmentFormat
@@ -53,7 +49,7 @@ open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
     }
 
     fun setFilter(render: TextureRender) {
-        runGLThread {
+        mEnv.postResource {
             render.prepare(mEnv)
             mFilterRender?.release(mEnv)
             mFilterRender = render
@@ -62,44 +58,39 @@ open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
 
     override fun setFormat(ctx: Any, format: SegmentFormat): Any? {
         mEnv = ctx as GLEnv
-        mInFormat=format
+        mInFormat = format
         mEglThread?.start()
         return true
     }
 
-    override fun emit(unit: Unit): Boolean {
+    override fun emit(unit: NioSegment): Boolean {
         return false
     }
 
 
     override fun release() {
         mEglThread?.quitSafely()
-        mEglThread=null
+        mEglThread = null
     }
 
     override fun seek(pts: Long, flag: Int) = throw UnsupportedOperationException()
 
-    fun runGLThread(fn: () -> Unit) {
-        mGLHandle?.post {
-            fn()
-        }
-    }
 
-    override fun addSink(sink: IMediaTargetSink<Unit, RealSurface>, flag: Int) {
-        runGLThread {
-            mSubOutput = OutputNode(sink).init(mEnv.context)
+    override fun addSink(sink: IMediaTarget<Unit, RealSurface>, flag: Int) {
+        mEnv.postRender {
+            mSubOutput = OutputNode(sink).init(context)
         }
 
     }
 
-    override fun delSink(pass: IMediaTargetSink<Unit, RealSurface>) {
-        runGLThread {
+    override fun delSink(pass: IMediaTarget<Unit, RealSurface>) {
+        mEnv.postRender {
             mSubOutput?.release()
             mSubOutput = null
         }
     }
 
-    private inner class OutputNode(val next: IMediaTargetSink<Unit, RealSurface>) {
+    private inner class OutputNode(val next: IMediaTarget<Unit, RealSurface>) {
         lateinit var mSurfaceCanvans: GLContext.EglSurface
         var mPtsStart = 0L
         lateinit var mSurface: RealSurface
@@ -121,7 +112,7 @@ open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
             mSurfaceCanvans.makeCurrent()
         }
 
-        fun swapdraw(render:TextureRender,timestamp: Long) {
+        fun swapdraw(render: TextureRender, timestamp: Long) {
             if (mPtsStart == 0L) {
                 mPtsStart = timestamp
             }
@@ -129,13 +120,14 @@ open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
             GLToolkit.checkError()
             GLES20.glViewport(0, 0, mOutFormat.width, mOutFormat.height)
             next.forward(Unit)
-            mFilterDrawable.draw(mEnv, render,null )
+            mFilterDrawable.draw(mEnv, render, null)
             mSurfaceCanvans.setPresentationTime(timestamp - mPtsStart)
             mSurfaceCanvans.swap()
             next.emit(Unit)
         }
     }
-    inner class EglThread:HandlerThread("VideoSence"){
+
+    inner class EglThread : HandlerThread("VideoSence") {
         private lateinit var mSrcDrawable: ExternalDrawable
         private lateinit var mCahceDrawable: TextureDrawable
         private lateinit var mCacheFbo: GLFbo
@@ -164,24 +156,24 @@ open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
 
             }
         }
+
         private fun prepareInGL() {
-            val env=mEnv
-            var rotate=false
+            val env = mEnv
+            var rotate = false
             if (mInFormat.rotation == 90 || mInFormat.rotation == 180) {
                 val swap = mInFormat.width
                 mInFormat.width = mInFormat.height
                 mInFormat.height = swap
-                rotate=true
+                rotate = true
             }
-            mOutFormat =SegmentFormat(mInFormat)
-            mOutFormat.height=mOutFormat.width
-            mOutFormat.rotation=0
+            mOutFormat = SegmentFormat(mInFormat)
+            mOutFormat.height = mOutFormat.width
+            mOutFormat.rotation = 0
 
-            val eglContext = GLToolkit.eglSetup(null, true)
-            mEnv.context = eglContext
-            mEnv.resManager = ResManager(mEnv)
-            mEnv.handle= mGLHandle!!
-            mMainOutput = OutputNode(next).init(eglContext)
+            context = GLToolkit.eglSetup(env.resManager?.resCtx?.context, true)
+
+            mEnv.mRenderHandle = mGLHandle!!
+            mMainOutput = OutputNode(next).init(context)
             mMainOutput.makeCurrent()
 
             GLES20.glEnable(GLES20.GL_BLEND)
@@ -198,8 +190,8 @@ open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
             mFilterRender.prepare(env)
 
             mSrcDrawable = ExternalDrawable(mInFormat.width, mInFormat.height)
-            mSrcDrawable.locTex= Loc(mInFormat.dir,rotate,mInFormat.height*1f/mInFormat.width
-                    /(mOutFormat.height*1.0f/mOutFormat.width))
+            mSrcDrawable.locTex = Loc(mInFormat.dir, rotate, mInFormat.height * 1f / mInFormat.width
+                    / (mOutFormat.height * 1.0f / mOutFormat.width))
 
             mCahceDrawable = TextureDrawable(false, mOutFormat.width, mOutFormat.height)
             mFilterDrawable = TextureDrawable(false, mOutFormat.width, mOutFormat.height)
@@ -215,8 +207,8 @@ open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
             mFilterFbo = GLFbo(mFilterDrawable.texture.value)
             mFilterFbo.prepare(env)
 
-            mInputTarget.set(mSrcDrawable.input)
-            mSrcDrawable.input?.setOnFrameAvailableListener {
+            mInputTarget.set(mSrcDrawable.target.get())
+            mSrcDrawable.target.get()?.setOnFrameAvailableListener {
                 eglDrawFrame()
             }
         }
@@ -230,16 +222,17 @@ open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
             mMainOutput.release()
             mEnv.release()
         }
+
         private fun eglDrawFrame() {
             drawCache()
             //filter
             drawFilter()
-            val time = mSrcDrawable.input?.timestamp ?: 0
+            val time = mSrcDrawable.target.get()?.timestamp ?: 0
             mMainOutput.apply {
-                swapdraw(mTexRender,time)
+                swapdraw(mTexRender, time)
             }
             mSubOutput?.apply {
-                swapdraw(mTexRender,time)
+                swapdraw(mTexRender, time)
             }
 
         }
@@ -260,10 +253,11 @@ open class VideoSence(private val next: IMediaTargetSink<Unit, RealSurface>) :
         private fun drawFilter() {
             mFilterFbo.using(true)
             GLES20.glViewport(0, 0, mOutFormat.width, mOutFormat.height)
-            mCahceDrawable.draw(mEnv, mFilterRender,null )
+            mCahceDrawable.draw(mEnv, mFilterRender, null)
             mFilterFbo.using(false)
         }
     }
+
     open fun drawDecorate() {
 
     }

@@ -1,5 +1,5 @@
 # AKMedia
-support display drawable(such as video,images,camera)
+support display drawable(such as mVideo,images,camera)
 and record it with offscreen support
 
 # demo notice

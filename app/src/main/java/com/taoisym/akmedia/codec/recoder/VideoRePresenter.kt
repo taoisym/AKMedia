@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import com.taoisym.akmedia.codec.IMediaSink
+import com.taoisym.akmedia.codec.IMediaSurfaceSink
 import com.taoisym.akmedia.codec.NioSegment
 import com.taoisym.akmedia.codec.SegmentFormat
 import com.taoisym.akmedia.codec.avc.MediaDecoder
@@ -16,7 +17,7 @@ import com.taoisym.akmedia.std.Lazy
 import java.io.IOException
 import java.util.*
 
-class VideoRePresenter(input: List<MediaConvertor.VideoCropItem>, internal var output: String, internal var listener: MediaConvertor.ConvertListener?) : MediaConvertor(), IMediaSink<NioSegment> {
+class VideoRePresenter(input: List<MediaConvertor.VideoCropItem>, internal var output: String, internal var listener: MediaConvertor.ConvertListener?) : MediaConvertor(), IMediaSurfaceSink {
 
     private var thread: HandlerThread? = null
     private var handler: Handler? = null
@@ -107,7 +108,7 @@ class VideoRePresenter(input: List<MediaConvertor.VideoCropItem>, internal var o
             val emitter = MediaSource(MediaSource.CONTINUE, MediaSource.STOP)
             src = emitter
 
-            emitter.addSink(MediaDecoder(this, outSurface), 0)
+            emitter.addSink(MediaDecoder(this), 0)
             emitter.addSink(copier, 1)
             emitter.setSeekMode(MediaExtractor.SEEK_TO_PREVIOUS_SYNC)
             emitter.emit(current.uri)

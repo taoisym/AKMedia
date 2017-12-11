@@ -15,16 +15,16 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:gravity="center"
-            android:textSize="28sp"
-            android:text="camera" />
+            android:text="camera"
+            android:textSize="28sp" />
 
         <TextView
             android:id="@+id/video"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:gravity="center"
-            android:textSize="28sp"
-            android:text="video" />
+            android:text="video"
+            android:textSize="28sp" />
 
     </LinearLayout>
 </FrameLayout>

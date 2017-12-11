@@ -39,7 +39,7 @@ import android.view.Surface;
 public final class GLContext {
     /**
      * Constructor flag: surface must be recordable.  This discourages EGL from using a
-     * pixel format that cannot be converted efficiently to something usable by the video
+     * pixel format that cannot be converted efficiently to something usable by the mVideo
      * encoder.
      */
     public static final int FLAG_RECORDABLE = 0x01;

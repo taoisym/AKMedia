@@ -9,7 +9,7 @@ interface IMediaControl {
 
     var rangeEnd: Long
 
-    val metainfo: AvcFileMeta?
+    val metaInfo: AvcFileMeta?
     @Throws(MediaSource.MediaException::class)
     fun start()
 

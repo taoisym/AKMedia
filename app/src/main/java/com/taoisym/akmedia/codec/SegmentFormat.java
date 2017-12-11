@@ -41,7 +41,7 @@ public class SegmentFormat {
         } catch (Exception e) {
 
         }
-        if(mime.startsWith("video/")) {
+        if(mime.startsWith("mVideo/")) {
             width = format.getInteger(MediaFormat.KEY_WIDTH);
             height = format.getInteger(MediaFormat.KEY_HEIGHT);
             try {

@@ -3,13 +3,14 @@ package com.taoisym.akmedia.codec.recoder
 import android.media.MediaCodec
 import android.media.MediaExtractor
 import com.taoisym.akmedia.codec.IMediaSink
+import com.taoisym.akmedia.codec.IMediaSurfaceSink
 import com.taoisym.akmedia.codec.NioSegment
 import com.taoisym.akmedia.codec.SegmentFormat
 import com.taoisym.akmedia.codec.avc.MediaMuxer
 import java.nio.ByteBuffer
 
 
-open class MediaCopier(private val muxer: MediaMuxer) : IMediaSink<NioSegment> {
+open class MediaCopier(private val muxer: MediaMuxer) :IMediaSurfaceSink{
     protected var extractor: MediaExtractor? = null
     protected var info = MediaCodec.BufferInfo()
     protected var ptsOffset: Long = 0
