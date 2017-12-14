@@ -1,39 +1,62 @@
 package com.taoisym.akmedia.ui
 
+import Filters
 import android.content.Context
-import android.graphics.BitmapFactory
-import com.taoisym.akmedia.R
+import android.graphics.SurfaceTexture
 import com.taoisym.akmedia.camera.AkCamera
 import com.taoisym.akmedia.codec.SegmentFormat
+import com.taoisym.akmedia.codec.VideoDir
+import com.taoisym.akmedia.codec.audio.AacPlayer
+import com.taoisym.akmedia.codec.audio.MusicPlayer
+import com.taoisym.akmedia.codec.avc.MediaDecoder
 import com.taoisym.akmedia.codec.avc.MediaMuxer
+import com.taoisym.akmedia.codec.avc.MediaSource
 import com.taoisym.akmedia.codec.avc.MediaWriter
-import com.taoisym.akmedia.render.FilterRender
+import com.taoisym.akmedia.render.GLEnv
 import com.taoisym.akmedia.render.TextureRender
-import com.taoisym.akmedia.render.egl.GLEnv
+import com.taoisym.akmedia.std.Lazy
 import com.taoisym.akmedia.std.Supplier
 import com.taoisym.akmedia.video.FileTarget
 import com.taoisym.akmedia.video.RealSurface
 import com.taoisym.akmedia.video.SurfaceTarget
-import com.taoisym.akmedia.video.VideoDecorate
 
 
-class CamTest {
-    var vg: VideoDecorate? = null
+class UseageSample {
+    var vg: VideoSenceSample? = null
     private var mp4: FileTarget? = null
 
-    fun test(camera: AkCamera, surface: Supplier<RealSurface>) {
-
+    fun camera(camera: AkCamera, main: Supplier<RealSurface>) {
         val context = GLEnv()
-        vg = VideoDecorate(SurfaceTarget(surface))
+        vg = VideoSenceSample(SurfaceTarget(main))
         val size = camera.parameter.previewSize
         val fmt = SegmentFormat(size.width, size.height, 0)
-        fmt.rotation = 180
+        fmt.dir=camera.face?.let {
+            if(it===true) VideoDir.FLIP_XY else VideoDir.FLIP_X
+        }?:VideoDir.FLIP_Y
+        fmt.rotation=90
         vg?.prepare()
         vg?.setFormat(context, fmt)
         camera.setPreviewTexture(vg!!.target)
         camera.startPreview()
     }
+    fun video(uri:String,main: Supplier<RealSurface>){
+        val context = GLEnv()
+        val format=SegmentFormat(uri)
+        vg = VideoSenceSample(SurfaceTarget(main))
+        val fmt = SegmentFormat(format.width, format.height, 0)
+        fmt.dir=VideoDir.FLIP_Y
+        vg?.prepare()
+        vg?.setFormat(context, fmt)
 
+        val lazy = object : Lazy<SurfaceTexture>() {
+            override fun refid() = vg?.target?.get()?:null
+        }
+        val video = MediaSource(MediaSource.CONTINUE, MediaSource.CONTINUE)
+        video.addSink(MediaDecoder(null, lazy), 0)
+        video.addSink(MediaDecoder(AacPlayer(),null), 1)
+        video.emit(uri)
+        video.start()
+    }
 
     fun start(ctx: Context) {
         if (mp4 != null)

@@ -4,7 +4,7 @@ import com.taoisym.akmedia.codec.IMediaSink
 import com.taoisym.akmedia.codec.SegmentFormat
 
 
-class NoopPhase<T> : IMediaSink<T> {
+class NoopSink<T> : IMediaSink<T> {
 
 
     override fun prepare() {
@@ -15,7 +15,7 @@ class NoopPhase<T> : IMediaSink<T> {
         return null
     }
 
-    override fun scatter(o: T): Boolean {
+    override fun emit(o: T): Boolean {
         return false
     }
 

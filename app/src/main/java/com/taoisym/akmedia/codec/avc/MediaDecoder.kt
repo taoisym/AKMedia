@@ -38,7 +38,7 @@ class MediaDecoder @JvmOverloads constructor(protected var next: IMediaSink<NioS
         this.present = if (texture == null) false else true
     }
 
-    override fun scatter(data: NioSegment): Boolean {
+    override fun emit(data: NioSegment): Boolean {
         var ret = false
         val stats = Stats()
         var state = decoder!!.dequeueInputBuffer(-1)
@@ -72,13 +72,13 @@ class MediaDecoder @JvmOverloads constructor(protected var next: IMediaSink<NioS
                         if (seeking) {
                             if (memo.pts >= jumpTo) {
                                 ret = true
-                                next?.scatter(memo)
+                                next?.emit(memo)
                                 seeking = false
                                 return true
                             }
                         } else {
                             ret = true
-                            next?.scatter(memo)
+                            next?.emit(memo)
                         }
                     }
                 } catch (e: Exception) {
@@ -182,7 +182,7 @@ class MediaDecoder @JvmOverloads constructor(protected var next: IMediaSink<NioS
     }
 
     companion object {
-        private val DEFAULT_VIDEO_DECODE_WAIT_TIME = 50000
+        private val DEFAULT_VIDEO_DECODE_WAIT_TIME = 10000
     }
 
 }

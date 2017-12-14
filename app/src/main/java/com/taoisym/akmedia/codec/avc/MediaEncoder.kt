@@ -56,7 +56,7 @@ class MediaEncoder(private var next: IMediaSink<NioSegment>) : IMediaSink<NioSeg
         encoder?.setParameters(param)
     }
 
-    override fun scatter(data: NioSegment): Boolean {
+    override fun emit(data: NioSegment): Boolean {
         val idx = encoder!!.dequeueInputBuffer(-1)
         if (idx >= 0) {
             forceKeyFrame()
@@ -77,7 +77,7 @@ class MediaEncoder(private var next: IMediaSink<NioSegment>) : IMediaSink<NioSeg
                 memo.set(info.presentationTimeUs, output!![idx])
                 memo.pos(0, output!![idx].limit())
                 memo.id = info.flags
-                next.scatter(memo)
+                next.emit(memo)
                 got = true
                 output!![idx].clear()
                 //Log.e("onFrameAvailable", "o=" + info.size);
@@ -150,12 +150,12 @@ class MediaEncoder(private var next: IMediaSink<NioSegment>) : IMediaSink<NioSeg
     }
 
     /**
-     * Returns true if this is a color format that this test code understands (i.e. we know how
+     * Returns true if this is a color format that this camera code understands (i.e. we know how
      * to read and generate frames in this format).
      */
     private fun isRecognizedFormat(colorFormat: Int): Boolean {
         when (colorFormat) {
-        // these are the formats we know how to handle for this test
+        // these are the formats we know how to handle for this camera
             MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420PackedPlanar, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420PackedSemiPlanar, MediaCodecInfo.CodecCapabilities.COLOR_TI_FormatYUV420PackedSemiPlanar -> return true
             else -> return false
         }

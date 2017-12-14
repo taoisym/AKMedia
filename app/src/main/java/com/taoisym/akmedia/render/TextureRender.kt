@@ -1,7 +1,6 @@
 package com.taoisym.akmedia.render
 
 import android.opengl.GLES20
-import com.taoisym.akmedia.render.egl.GLEnv
 import com.taoisym.akmedia.render.egl.GLProgram
 import com.taoisym.akmedia.render.egl.IGLNode
 
@@ -16,12 +15,15 @@ open class TextureRender : IGLNode {
 
     val id by lazy { program.id }
 
-    constructor(oes: Boolean) {
-        program = GLProgram(VS, if (oes) FS_OES else FS)
+    constructor(oes: Boolean, circle: Boolean = false) {
+        program = GLProgram(VS, if (oes) {
+            if (circle) FS_CIRCLE else FS_OES
+        } else FS)
         clear = floatArrayOf(0f, 0f, 0f, 1f)
     }
-    constructor(vs:String,fs:String) {
-        program = GLProgram(vs,fs)
+
+    constructor(vs: String, fs: String) {
+        program = GLProgram(vs, fs)
         clear = floatArrayOf(0f, 0f, 0f, 1f)
     }
 
@@ -40,10 +42,7 @@ open class TextureRender : IGLNode {
     }
 
     override fun prepare(env: GLEnv) {
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
-        GLES20.glClearColor(clear[0], clear[1], clear[2], clear[3])
         program.prepare(env)
-        GLES20.glUseProgram(0)
         program.using(true)
         shapeId = android.opengl.GLES20.glGetAttribLocation(id, "draw_shape")
         texId = android.opengl.GLES20.glGetAttribLocation(id, "texture_vertex")
@@ -55,6 +54,7 @@ open class TextureRender : IGLNode {
 
     override fun using(use: Boolean) {
         program.using(use)
+
     }
 
     override fun release(env: GLEnv) {
@@ -88,6 +88,17 @@ open class TextureRender : IGLNode {
                 "void main() { \n" +
                 "   gl_FragColor= texture2D(texture_0, sampler_vertex );\n" +
                 "}"
+        internal val FS_CIRCLE = "#extension GL_OES_EGL_image_external : require\n" +
+                "precision highp float;\n" +
+                "varying vec2 sampler_vertex;\n" +
+                "uniform samplerExternalOES texture_0;\n" +
+                "void main() \n" +
+                "{ \n" +
+                "\t if(dot(sampler_vertex-0.5,sampler_vertex-0.5)<0.5*0.5)\n" +
+                "        gl_FragColor =texture2D(texture_0, sampler_vertex);\n" +
+                "     else\n" +
+                "        gl_FragColor = vec4(0.0);\n" +
+                "}\n"
     }
 
     /**

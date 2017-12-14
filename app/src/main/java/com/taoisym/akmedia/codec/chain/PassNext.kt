@@ -6,7 +6,7 @@ import com.taoisym.akmedia.codec.Segment
 import com.taoisym.akmedia.codec.SegmentFormat
 
 
-class DispatcherPass<T : Segment<*>>(internal var sink0: IMediaSink<T>, internal var sink1: IMediaSink<T>) : IMediaSink<T>, IMediaSource<T, Unit> {
+class PassNext<T : Segment<*>>(internal var sink0: IMediaSink<T>, internal var sink1: IMediaSink<T>) : IMediaSink<T>, IMediaSource<T, Unit> {
 
     override fun prepare() {
         sink0.prepare()
@@ -23,10 +23,10 @@ class DispatcherPass<T : Segment<*>>(internal var sink0: IMediaSink<T>, internal
 
     }
 
-    override fun scatter(data: T): Boolean {
-        sink0.scatter(data)
+    override fun emit(data: T): Boolean {
+        sink0.emit(data)
         data.reset()
-        sink1.scatter(data)
+        sink1.emit(data)
         data.reset()
         return true
     }

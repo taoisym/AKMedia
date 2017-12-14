@@ -15,7 +15,7 @@ class NioToRaw : IMediaSink<NioSegment>, IMediaSource<RawSegment, Unit> {
     }
 
     @Synchronized
-    override fun scatter(data: NioSegment): Boolean {
+    override fun emit(data: NioSegment): Boolean {
         if (buffer == null || buffer!!.size < data.size) {
             buffer = ByteArray(data.size)
         }
@@ -36,7 +36,7 @@ class NioToRaw : IMediaSink<NioSegment>, IMediaSource<RawSegment, Unit> {
         }
 
         if (next != null)
-            next!!.scatter(memo)
+            next!!.emit(memo)
         if (meta.width > 0) {
             //Stats.print("frame pts="+data.pts);
         }

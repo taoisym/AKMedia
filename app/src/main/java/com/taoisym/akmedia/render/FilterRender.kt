@@ -1,12 +1,8 @@
 package com.taoisym.akmedia.render
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.opengl.GLES20
-import com.taoisym.akmedia.render.egl.GLEnv
-import com.taoisym.akmedia.render.egl.GLProgram
 import com.taoisym.akmedia.render.egl.GLTexture
-import com.taoisym.akmedia.render.egl.IGLNode
 import com.taoisym.akmedia.std.Ref
 
 class FilterRender(vs:String,fs:String,val bmp:Bitmap) : TextureRender(vs,fs) {
@@ -27,6 +23,7 @@ class FilterRender(vs:String,fs:String,val bmp:Bitmap) : TextureRender(vs,fs) {
         if(use) {
             GLES20.glActiveTexture(GLES20.GL_TEXTURE1)
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, filterTexture.value!!.id)
+
         }else{
             GLES20.glActiveTexture(GLES20.GL_TEXTURE1)
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,0)

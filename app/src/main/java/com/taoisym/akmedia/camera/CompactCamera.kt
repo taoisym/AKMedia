@@ -10,6 +10,11 @@ import com.taoisym.akmedia.std.Supplier
 
 
 class CompactCamera : AkCamera {
+    override var face: Boolean?
+        get() = mImpl.face
+        set(value) {
+            mImpl.face=value
+        }
     protected lateinit var mImpl: AkCamera
     protected var mCameraThread: HandlerThread? = null
     protected var mPostor: Handler

@@ -1,12 +1,16 @@
 package com.taoisym.akmedia.codec;
 
 import android.media.MediaFormat;
+import android.media.MediaMetadataRetriever;
+
+import org.jetbrains.annotations.NotNull;
 
 
 public class SegmentFormat {
-    public final String mime;
-    public final int channel;
-    public final int sample;
+
+    public String mime;
+    public int channel;
+    public int sample;
     public int width;
     public int height;
     public int rotation;
@@ -15,6 +19,7 @@ public class SegmentFormat {
     public int BIT_RATE;
     public int FRAME_RATE = 30;
     public int I_FRAME_INTERVAL;
+    public VideoDir dir=VideoDir.FLIP_Y;
     MediaFormat format;
 
     public SegmentFormat(SegmentFormat format) {
@@ -31,24 +36,28 @@ public class SegmentFormat {
     public SegmentFormat(MediaFormat format) {
         this.format = format;
         mime = format.getString(MediaFormat.KEY_MIME);
-        width = format.getInteger(MediaFormat.KEY_WIDTH);
-        height = format.getInteger(MediaFormat.KEY_HEIGHT);
-        try {
-            colorFormat = format.getInteger(MediaFormat.KEY_COLOR_FORMAT);
-        } catch (Exception e) {
-        }
-        try {
-            rotation = format.getInteger(MediaFormat.KEY_ROTATION);
-        } catch (Exception e) {
-
-        }
         try {
             MAX_INPUT_SIZE = format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
         } catch (Exception e) {
 
         }
-        this.channel = 0;
-        this.sample = 0;
+        if(mime.startsWith("video/")) {
+            width = format.getInteger(MediaFormat.KEY_WIDTH);
+            height = format.getInteger(MediaFormat.KEY_HEIGHT);
+            try {
+                colorFormat = format.getInteger(MediaFormat.KEY_COLOR_FORMAT);
+            } catch (Exception e) {
+            }
+            try {
+                rotation = format.getInteger(MediaFormat.KEY_ROTATION);
+            } catch (Exception e) {
+
+            }
+
+        }else if(mime.startsWith("audio/")) {
+            this.channel = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
+            this.sample = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+        }
     }
 
     public SegmentFormat(int width, int height, int colorFormat) {
@@ -69,6 +78,15 @@ public class SegmentFormat {
         this.height = 0;
         this.colorFormat = 0;
         this.MAX_INPUT_SIZE = 0;
+    }
+
+    public SegmentFormat(@NotNull String uri) {
+        MediaMetadataRetriever retriever=new MediaMetadataRetriever();
+        retriever.setDataSource(uri);
+        AvcFileMeta meta=new AvcFileMeta(retriever);
+        this.width=meta.width;
+        this.height=meta.height;
+        this.rotation=meta.rotation;
     }
 
     public MediaFormat format() {

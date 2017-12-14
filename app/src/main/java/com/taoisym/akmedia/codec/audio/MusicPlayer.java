@@ -11,7 +11,7 @@ public class MusicPlayer {
     public void prepare(String file, boolean loop) {
         try {
             src.addSink(new MediaDecoder(pcm), 1);
-            src.scatter(file);
+            src.emit(file);
             src.start();
         } catch (Exception e) {
             e.printStackTrace();

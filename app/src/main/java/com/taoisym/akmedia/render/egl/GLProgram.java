@@ -1,6 +1,8 @@
 package com.taoisym.akmedia.render.egl;
 
 
+import com.taoisym.akmedia.render.GLEnv;
+
 public class GLProgram implements IGLNode {
     public int id;
     String vs;

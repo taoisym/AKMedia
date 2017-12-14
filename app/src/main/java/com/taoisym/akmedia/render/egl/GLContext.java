@@ -23,6 +23,8 @@ import android.opengl.EGLContext;
 import android.opengl.EGLDisplay;
 import android.opengl.EGLExt;
 import android.opengl.EGLSurface;
+import android.opengl.GLES20;
+import android.opengl.GLES30;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
@@ -93,6 +95,7 @@ public final class GLContext {
         }
 
         // Try to get a GLES3 context, if requested.
+
         if ((flags & FLAG_TRY_GLES3) != 0) {
             //Log.d(TAG, "Trying GLES 3");
             EGLConfig config = getConfig(flags, 3);

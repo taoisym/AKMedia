@@ -13,7 +13,7 @@ typealias TakePhotoCallback = (data: ByteArray, i: Int, width: Int, height: Int)
 interface AkCamera {
 
     val parameter: Parameter
-
+    var face:Boolean?
     class Area(var rect: Rect, var weight: Int)
 
     class Size {

@@ -24,8 +24,8 @@ open class Passer<T>(internal var next: IMediaSink<T>) : IMediaSink<T>, IMediaSo
         return null
     }
 
-    override fun scatter(o: T): Boolean {
-        return next.scatter(o)
+    override fun emit(o: T): Boolean {
+        return next.emit(o)
     }
 
     override fun release() {

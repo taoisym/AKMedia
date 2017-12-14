@@ -16,9 +16,9 @@ import com.taoisym.akmedia.codec.NioSegment
 import com.taoisym.akmedia.codec.SegmentFormat
 import com.taoisym.akmedia.drawable.GLDrawable
 import com.taoisym.akmedia.drawable.TextureDrawable
+import com.taoisym.akmedia.render.GLEnv
 import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.render.egl.GLContext
-import com.taoisym.akmedia.render.egl.GLEnv
 import com.taoisym.akmedia.render.egl.GLToolkit
 import java.nio.ByteBuffer
 
@@ -118,7 +118,7 @@ class RedrawEncoder : IMediaSink<PresentSegment>, IMediaSource<NioSegment, Unit>
         }
     }
 
-    override fun scatter(data: PresentSegment): Boolean {
+    override fun emit(data: PresentSegment): Boolean {
         ptsBuffer!!.write(data.pts, data.data())
         //must block continue draw
         waitNewFrame()
@@ -138,7 +138,7 @@ class RedrawEncoder : IMediaSink<PresentSegment>, IMediaSource<NioSegment, Unit>
                 memo.set(info.presentationTimeUs, output!![idx])
                 memo.pos(0, output!![idx].limit())
                 memo.id = info.flags
-                next.scatter(memo)
+                next.emit(memo)
                 got = true
                 output!![idx].clear()
                 //Log.e("onFrameAvailable", "output=" + info.presentationTimeUs);
@@ -214,7 +214,7 @@ class RedrawEncoder : IMediaSink<PresentSegment>, IMediaSource<NioSegment, Unit>
     internal fun createInputSurface(width: Int, height: Int) {
         env = GLEnv()
 
-        context = GLContext(null, GLContext.FLAG_RECORDABLE)
+        context = GLContext(null, GLContext.FLAG_RECORDABLE or GLContext.FLAG_TRY_GLES3)
         out = context!!.createWindowSurface(encoderSurface)
         out!!.makeCurrent()
         render = TextureRender()
@@ -242,9 +242,9 @@ class RedrawEncoder : IMediaSink<PresentSegment>, IMediaSource<NioSegment, Unit>
                 Matrix.rotateM(tr_texture, 0, 90f, 0.5f, 0.5f, 0f);
                 Matrix.multiplyMM(tr_final, 0, frame.tr_texture, 0, tr_texture, 0)
                 view?.apply {
-                    mtxShape.put(tr_final)
+                    mtxShape=tr_final
                     //todo!!!
-                    draw(env!!,null as TextureRender)
+                    draw(env!!, null as TextureRender,null )
                 }
                 out!!.setPresentationTime(time)
                 out!!.swap()

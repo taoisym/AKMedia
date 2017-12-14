@@ -22,7 +22,7 @@ class FileTarget(val next: IMediaSink<NioSegment>) : IMediaTargetSink<Unit, Real
 
     }
 
-    override fun scatter(data: Unit): Boolean {
+    override fun emit(data: Unit): Boolean {
         queryOutput()
         return true
     }
@@ -71,7 +71,7 @@ class FileTarget(val next: IMediaSink<NioSegment>) : IMediaTargetSink<Unit, Real
                 memo.set(info.presentationTimeUs, outbuffers[idx])
                 memo.pos(0, outbuffers[idx].limit())
                 memo.id = info.flags
-                next.scatter(memo)
+                next.emit(memo)
                 got = true
                 outbuffers[idx].clear()
                 //Log.e("onFrameAvailable", "output=" + info.presentationTimeUs);

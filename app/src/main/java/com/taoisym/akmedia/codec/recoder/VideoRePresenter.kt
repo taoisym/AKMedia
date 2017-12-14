@@ -110,7 +110,7 @@ class VideoRePresenter(input: List<MediaConvertor.VideoCropItem>, internal var o
             emitter.addSink(MediaDecoder(this, outSurface), 0)
             emitter.addSink(copier, 1)
             emitter.setSeekMode(MediaExtractor.SEEK_TO_PREVIOUS_SYNC)
-            emitter.scatter(current.uri)
+            emitter.emit(current.uri)
             emitter.setPlayRange(current.startPts, current.endPts)
             emitter.start()
         }
@@ -162,14 +162,14 @@ class VideoRePresenter(input: List<MediaConvertor.VideoCropItem>, internal var o
         return to
     }
 
-    override fun scatter(o: NioSegment): Boolean {
+    override fun emit(o: NioSegment): Boolean {
         // TODO: 17-7-13 change pts here
         val memo = PresentSegment(o)
         memo.pts = segmentVideoPts + memo.pts - current.startPts
         lastVideoPts = memo.pts
         memo.buffer = mtx
         sencder.sendProgress(lastVideoPts)
-        return next?.get()?.scatter(memo) ?: false
+        return next?.get()?.emit(memo) ?: false
     }
 
     override fun release() {
@@ -213,10 +213,10 @@ class VideoRePresenter(input: List<MediaConvertor.VideoCropItem>, internal var o
     internal inner class AuidoCopier(var count: Int, muxer: MediaMuxer) : MediaCopier(muxer) {
 
 
-        override fun scatter(nio: NioSegment): Boolean {
+        override fun emit(nio: NioSegment): Boolean {
             nio.pts = segmentAuidoPts + nio.pts - (current?.startPts ?: 0)
             lastAudioPts = nio.pts
-            return super.scatter(nio)
+            return super.emit(nio)
         }
 
         override fun release() {

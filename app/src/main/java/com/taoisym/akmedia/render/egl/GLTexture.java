@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
+import com.taoisym.akmedia.render.GLEnv;
+
 import org.jetbrains.annotations.NotNull;
 
 
@@ -38,6 +40,7 @@ public class GLTexture implements IGLNode {
     }
 
     public void update(@NotNull Bitmap bmp) {
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, id);
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
     }

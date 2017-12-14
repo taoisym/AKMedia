@@ -4,7 +4,7 @@ import android.media.MediaMetadataRetriever;
 
 
 public class AvcFileMeta {
-    public final int rotate;
+    public final int rotation;
     public final long duration;
     public final boolean hasVideo;
     public final boolean hasAudio;
@@ -14,7 +14,7 @@ public class AvcFileMeta {
 
 
     public AvcFileMeta(MediaMetadataRetriever retriever) {
-        rotate = intValue(retriever, MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+        rotation = intValue(retriever, MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
 
         duration = longValue(retriever, MediaMetadataRetriever.METADATA_KEY_DURATION);
 //        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {

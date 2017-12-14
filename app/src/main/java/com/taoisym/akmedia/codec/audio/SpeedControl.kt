@@ -30,9 +30,9 @@ class SpeedControl(internal var next: IMediaSink<NioSegment>, private val speed:
         return null
     }
 
-    override fun scatter(data: NioSegment): Boolean {
+    override fun emit(data: NioSegment): Boolean {
         if (speed.toDouble() == 1.0) {
-            return next.scatter(data)
+            return next.emit(data)
         }
         if (memo == null) {
             memo = NioSegment(data.meta)
@@ -59,7 +59,7 @@ class SpeedControl(internal var next: IMediaSink<NioSegment>, private val speed:
             pipe.flip()
             memo.pts = data.pts
             memo.size = outputReqestSize
-            next.scatter(memo)
+            next.emit(memo)
         } else {//read request size,output /speed size
             data.buffer.get(sampleBuffer, 0, data.size)
             ring.write(sampleBuffer, 0, data.size)
@@ -78,7 +78,7 @@ class SpeedControl(internal var next: IMediaSink<NioSegment>, private val speed:
                 pipe.put(sampleBuffer, 0, loop)
                 pipe.flip()
                 memo.size = loop
-                next.scatter(memo)
+                next.emit(memo)
             } else {
                 memo.pts = data.pts
             }

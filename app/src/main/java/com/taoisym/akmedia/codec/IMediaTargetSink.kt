@@ -13,11 +13,9 @@ interface IMediaTargetSink<Data, Target> {
     fun prepare()
 
     fun setFormat(ctx: Any, format: SegmentFormat): Any?
-
-    fun scatter(data: Data): Boolean
-
+    fun forward(data: Data){}
+    fun emit(data: Data): Boolean
     fun release()
-
     fun seek(pts: Long, flag: Int) {}
 }
 typealias  IMediaSink<Data> = IMediaTargetSink<Data, Unit>

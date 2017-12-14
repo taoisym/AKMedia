@@ -1,94 +1,102 @@
 package com.taoisym.akmedia.layout
 
-import glm.vec2.Vec2
-import glm.vec4.Vec4
-import java.nio.Buffer
+import android.graphics.Matrix
+import com.taoisym.akmedia.codec.VideoDir
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.nio.FloatBuffer
 
 class Loc {
+    private var tex = false
+    private var flipXY: VideoDir = VideoDir.FLIP_Y
+    private var rotate: Boolean = false
+    private var hwRatio: Float = 1f
+    private val loc = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer()
 
-    constructor(p0: Vec2, p1: Vec2, texMirror: Boolean = false) {
-        this.mirror = texMirror
-        corner0 = Vec4(p0, 0, 1)
-        corner1 = Vec4(p1, 0f, 1f)
+    /**
+     * constructor for position
+     */
+    constructor(p0: Pos = Pos(-1f), p1: Pos = Pos(1f)) {
+        set(p0, p1)
     }
 
-    constructor(tex: Boolean = false) {
+    /**
+     * constructor for texture
+     *              Mp4Video                FrontCamera         BackCamera
+     * flipXY :     VideoDir.FLIP_Y         VideoDir.FLIP_XY    VideoDir.FLIP_X
+     * rotation:    false                   true                true
+     *
+     * default layout @center crop@ if source and view (Height/Width) ratio not eq
+     * hwRatio=     (viewH/W)/(srcH/W)
+     */
+    constructor(flipXY: VideoDir, rotate: Boolean = false, hwRatio: Float = 1f) {
+        tex = true
+        this.flipXY = flipXY
+        this.rotate = rotate
+        this.hwRatio = hwRatio
+        set(Pos(0f), Pos(1f))
+    }
+
+    fun set(p0: Pos, p1: Pos) {
+        var dots = FloatArray(8)
+        dots[0] = p0.x
+        dots[1] = p1.y
+
+        dots[2] = p1.x
+        dots[3] = p1.y
+
+        dots[4] = p0.x
+        dots[5] = p0.y
+
+        dots[6] = p1.x
+        dots[7] = p0.y
         if (tex) {
-            corner0 = Vec4(0, 0, 0, 1)
-        } else {
-            corner0 = Vec4(-1, -1, 0, 1)
+            comupte(dots)
         }
-        this.mirror = tex
-        corner1 = Vec4(1, 1, 0f, 1f)
+        fillGL(dots)
     }
 
-    private var changed = true
-    var mirror: Boolean = false
-    var camera: Boolean?=null
-    var corner0: Vec4
-        set(value) {
-            changed = true
-            field = value
-        }
-    var corner1: Vec4
-        set(value) {
-            changed = true
-            field = value
-        }
-
-    val loc = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer()
-
-    fun toGL(tr: GLTransform?): Buffer {
-        if (!changed)
-            return loc
-        changed = false
-        var a = if (tr != null) tr.translate(corner0) else corner0
-        var b = if (tr != null) tr.translate(corner1) else corner1
-        loc.position(0)
-        if (mirror) {
-            if(camera==null){
-                loc.put(a.x)
-                loc.put(b.y)
-                loc.put(b.x)
-                loc.put(b.y)
-                loc.put(a.x)
-                loc.put(a.y)
-                loc.put(b.x)
-                loc.put(a.y)
-            }else if(camera==true) {
-                loc.put(a.x)
-                loc.put(b.y)
-                loc.put(a.x)
-                loc.put(a.y)
-                loc.put(b.x)
-                loc.put(b.y)
-                loc.put(b.x)
-                loc.put(a.y)
-            }else{
-                loc.put(b.x)
-                loc.put(b.y)
-                loc.put(b.x)
-                loc.put(a.y)
-                loc.put(a.x)
-                loc.put(b.y)
-                loc.put(a.x)
-                loc.put(a.y)
-            }
-        } else {
-            loc.put(a.x)
-            loc.put(a.y)
-            loc.put(b.x)
-            loc.put(a.y)
-            loc.put(a.x)
-            loc.put(b.y)
-            loc.put(b.x)
-            loc.put(b.y)
-        }
-        loc.position(0)
+    fun toGL(): FloatBuffer {
         return loc
     }
 
+    fun comupte(dots: FloatArray) {
+        var mat = Matrix()
+        mat.postTranslate(-0.5f, -0.5f)
+        when (flipXY) {
+            VideoDir.FLIP_X -> mat.postScale(-1f, 1f)
+            VideoDir.FLIP_Y -> mat.postScale(1f, -1f)
+            VideoDir.FLIP_XY -> mat.postScale(-1f, -1f)
+        }
 
+        if (rotate) {
+            mat.postRotate(90f, 0.0f, 0.0f)
+        }
+        centerCrop(mat, hwRatio, rotate)
+        mat.postTranslate(0.5f, 0.5f)
+        mat.mapPoints(dots)
+        fillGL(dots)
+    }
+
+    private fun fillGL(dots: FloatArray) {
+        loc.position(0)
+        loc.put(dots)
+        loc.position(0)
+    }
+
+    private fun centerCrop(mat: Matrix, hwRatio: Float, rotate: Boolean = true) {
+        if (rotate) {
+            if (hwRatio > 1) {
+                mat.postScale(1 / hwRatio, 1f)
+            } else if (hwRatio < 1) {
+                mat.postScale(1f, 1 / hwRatio)
+            }
+        } else {
+            if (hwRatio > 1) {
+                mat.postScale(1f, 1 / hwRatio)
+            } else if (hwRatio < 1) {
+                mat.postScale(1 / hwRatio, 1f)
+            }
+        }
+    }
 }

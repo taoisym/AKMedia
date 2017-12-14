@@ -24,8 +24,8 @@ void main()
 
      float luminance = dot(irgb, W);
 	 vec3 gray = vec3(luminance, luminance, luminance);
-	 vec3 result = BrightnessContrastSaturation(gray, 2.5, 1.1, 1.0);
-	 if(dot(sampler_vertex-0.5,sampler_vertex-0.5)<0.5*0.5)
+	 vec3 result = BrightnessContrastSaturation(gray, 2.2, 1.1, 1.0);
+	 if(dot(sampler_vertex-vec2(0.5),sampler_vertex-vec2(0.5))<0.5*0.5)
         gl_FragColor = vec4(result, 1.);
      else
         gl_FragColor = vec4(0.0,0.0,0.0,1.0);

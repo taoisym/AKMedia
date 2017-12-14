@@ -28,7 +28,7 @@ class MediaReader(private var next: IMediaSink<NioSegment>) : IMediaSink<NioSegm
         return null
     }
 
-    override fun scatter(nioSegment: NioSegment): Boolean {
+    override fun emit(nioSegment: NioSegment): Boolean {
         buffer!!.clear()
         val size = extractor.readSampleData(buffer!!, 0)
         val pts = extractor.sampleTime
@@ -36,7 +36,7 @@ class MediaReader(private var next: IMediaSink<NioSegment>) : IMediaSink<NioSegm
         val memo = NioSegment(fmt)
         memo.set(pts, buffer)
         memo.pos(0, size)
-        return next.scatter(memo)
+        return next.emit(memo)
     }
 
     override fun addSink(sink: IMediaSink<NioSegment>, flag: Int) {

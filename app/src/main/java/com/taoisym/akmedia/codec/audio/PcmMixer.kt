@@ -22,9 +22,9 @@ class PcmMixer : IMediaSink<NioSegment>, IMediaSource<RawSegment, Unit> {
     protected val mixLock = ReentrantLock()
 
     @Synchronized
-    override fun scatter(data: NioSegment): Boolean {
+    override fun emit(data: NioSegment): Boolean {
         if (data == null) {
-            //next.scatter(null);
+            //next.emit(null);
             return true
         }
         val ref = data.buffer
@@ -51,7 +51,7 @@ class PcmMixer : IMediaSink<NioSegment>, IMediaSource<RawSegment, Unit> {
             val memo = RawSegment(data.meta)
             memo.pos(0, min)
             memo.set(data.pts, mix(min))
-            next!!.scatter(memo)
+            next!!.emit(memo)
             mixLock.unlock()
         } else {
             if (first.used > 0) {
@@ -65,7 +65,7 @@ class PcmMixer : IMediaSink<NioSegment>, IMediaSource<RawSegment, Unit> {
             select.read(mix0, 0, used)
             //memo.set(data.pts,mix0);
             //memo.pos(0,used);
-            //next.scatter(memo);
+            //next.emit(memo);
         }
         return true
     }

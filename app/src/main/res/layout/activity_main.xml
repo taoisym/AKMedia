@@ -22,13 +22,15 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:gravity="center"
-            android:text="录制" />
+            android:textColor="@color/colorAccent"
+            android:text="录制(/sdcard/cam.mp4)" />
 
         <TextView
             android:id="@+id/end"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:gravity="center"
+            android:textColor="@color/colorAccent"
             android:text="停止" />
 
         <TextView
@@ -36,6 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:gravity="center"
-            android:text="使用滤镜" />
+            android:textColor="@color/colorAccent"
+            android:text="切换滤镜" />
     </LinearLayout>
 </FrameLayout>

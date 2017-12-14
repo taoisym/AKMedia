@@ -12,7 +12,7 @@ import java.io.IOException
 
 class AkCameraV1 : AkCamera {
     protected var mCamera: Camera? = null
-    protected var mIsFrontFace: Boolean = false
+
     protected var mReforer: Reformer<AkCamera.Parameter>? = null
     protected var mFineControl: Reformer<AkCamera.Parameter>? = null
     protected var mPreviewCallback: PreviewCallback? = null
@@ -21,12 +21,17 @@ class AkCameraV1 : AkCamera {
     private var mMeterAreaSupplier: Reformer<List<AkCamera.Area>>? = null
     protected var mFocusManager: FocusManager? = null
 
+    /**
+     * front true,back false
+     * else null
+     */
+    override var face: Boolean? = null
     override val parameter: AkCamera.Parameter
         get() = if (mCamera == null) throw RuntimeException() else from(mCamera!!.parameters)
 
 
     override fun open(faceFront: Boolean, cameraOpenCallback: CameraOpenCallback) {
-        //release();
+        face=null
         var open = -1
         val cameraInfo = Camera.CameraInfo()
         for (i in 0 until Camera.getNumberOfCameras()) {
@@ -42,16 +47,18 @@ class AkCameraV1 : AkCamera {
         }
         if (open == -1) {
             open = 0
-            mIsFrontFace = !faceFront
+            face = !faceFront
         } else {
-            mIsFrontFace = faceFront
+            face = faceFront
         }
         try {
             val camera = Camera.open(open)
             mCamera = camera
             cameraOpenCallback?.invoke(true)
             mFocusManager = FocusManager()
-        } catch (e: RuntimeException) {
+
+        } catch (e: Exception) {
+            face=null
             cameraOpenCallback?.invoke(false)
         }
 
@@ -65,6 +72,7 @@ class AkCameraV1 : AkCamera {
         mFocusManager?.apply {
             reset()
         }
+        face=null
         mCamera = null
         mFocusManager = null
         mTarget = null
