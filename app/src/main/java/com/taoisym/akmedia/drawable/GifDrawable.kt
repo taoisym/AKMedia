@@ -13,48 +13,48 @@ import java.io.FileInputStream
 
 class GifDrawable(val uri: String, val bp: GifBitmapProvider) : GLDrawable(false), PlayAble {
     private val mCache = ArrayList<GLTexture>()
-    private var start: (() -> Unit)?=null
+    private var start = false
     private lateinit var stop: () -> Unit
     override fun prepare(env: GLEnv) {
         super.prepare(env)
-        env.postResource {
-            val decorer = StandardGifDecoder(bp)
-            decorer.read(BufferedInputStream(FileInputStream(uri)),
-                    File(uri).length().toInt())
-            val width = decorer.width
-            val height = decorer.height
-            val size = decorer.frameCount
+        val decorer = StandardGifDecoder(bp)
+        decorer.read(BufferedInputStream(FileInputStream(uri)),
+                File(uri).length().toInt())
+        val width = decorer.width
+        val height = decorer.height
+        val size = decorer.frameCount
 
-            (0 until size).forEach {
-                decorer.advance()
-                var frame = decorer.nextFrame
-                val tex = GLTexture(GLES20.GL_TEXTURE_2D, width, height)
-                tex.prepare(env)
-                tex.update(frame)
-                mCache.add(tex)
-            }
-            decorer.resetFrameIndex()
-            var idx = 0
-            val update: Runnable = object : Runnable {
-                override fun run() {
-                    texture.value = mCache[idx]
-                    idx = idx + 1
-                    if (idx == size)
-                        idx = 0
-                    decorer.advance()
-                    env.postRender(this, decorer.nextDelay.toLong())
-                }
-            }
-            start = {
-                //todo fix error here
-                env.postRender(update, 1000)
-            }
-            stop = {
-                env.removeRenderFunc(update)
-            }
-
-            start?.invoke()
+        (0 until size).forEach {
+            decorer.advance()
+            var frame = decorer.nextFrame
+            val tex = GLTexture(GLES20.GL_TEXTURE_2D, width, height)
+            tex.prepare(env)
+            tex.update(frame)
+            mCache.add(tex)
         }
+        decorer.resetFrameIndex()
+
+        val update: Runnable = object : Runnable {
+            var idx = 0
+            override fun run() {
+                texture.value = mCache[idx]
+                idx += 1
+                if (idx == size)
+                    idx = 0
+                decorer.advance()
+                env.postRender(this, decorer.nextDelay.toLong())
+                start=true
+            }
+        }
+
+        val ready = {
+            env.postRender(update, 0)
+        }
+        stop = {
+            env.removeRenderFunc(update)
+        }
+
+        ready?.invoke()
     }
 
     override fun release(env: GLEnv) {
@@ -65,9 +65,10 @@ class GifDrawable(val uri: String, val bp: GifBitmapProvider) : GLDrawable(false
     }
 
     override fun draw(env: GLEnv, render: TextureRender?, tr: GLTransform?) {
-        if(start!=null)
+        if (start)
             super.draw(env, render, tr)
     }
+
     override fun start() {
         //start.invoke()
     }
