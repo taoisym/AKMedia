@@ -151,7 +151,7 @@ open class VideoSence(private val next: IMediaTarget<Unit, RealSurface>) :
                         releaseInGL(it)
                     }
                 } catch (e: Exception) {
-
+                    e.printStackTrace()
                 }
 
             }

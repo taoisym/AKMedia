@@ -3,7 +3,9 @@ package com.taoisym.akmedia.drawable
 import android.opengl.GLES20
 import com.bumptech.glide.gifdecoder.StandardGifDecoder
 import com.bumptech.glide.load.resource.gif.GifBitmapProvider
+import com.taoisym.akmedia.layout.GLTransform
 import com.taoisym.akmedia.render.GLEnv
+import com.taoisym.akmedia.render.TextureRender
 import com.taoisym.akmedia.render.egl.GLTexture
 import java.io.BufferedInputStream
 import java.io.File
@@ -11,7 +13,7 @@ import java.io.FileInputStream
 
 class GifDrawable(val uri: String, val bp: GifBitmapProvider) : GLDrawable(false), PlayAble {
     private val mCache = ArrayList<GLTexture>()
-    private lateinit var start: () -> Unit
+    private var start: (() -> Unit)?=null
     private lateinit var stop: () -> Unit
     override fun prepare(env: GLEnv) {
         super.prepare(env)
@@ -44,11 +46,14 @@ class GifDrawable(val uri: String, val bp: GifBitmapProvider) : GLDrawable(false
                 }
             }
             start = {
-                env.postRender(update, 0)
+                //todo fix error here
+                env.postRender(update, 1000)
             }
             stop = {
                 env.removeRenderFunc(update)
             }
+
+            start?.invoke()
         }
     }
 
@@ -59,8 +64,12 @@ class GifDrawable(val uri: String, val bp: GifBitmapProvider) : GLDrawable(false
         }
     }
 
+    override fun draw(env: GLEnv, render: TextureRender?, tr: GLTransform?) {
+        if(start!=null)
+            super.draw(env, render, tr)
+    }
     override fun start() {
-        start.invoke()
+        //start.invoke()
     }
 
     override fun stop() {
