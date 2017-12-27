@@ -56,7 +56,7 @@ class MediaEncoder(private var next: IMediaSink<NioSegment>) : IMediaSurfaceSink
     override fun emit(data: NioSegment): Boolean {
         val idx = encoder!!.dequeueInputBuffer(-1)
         if (idx >= 0) {
-            forceKeyFrame()
+            //forceKeyFrame()
             inputs!![idx].put(data.buffer)
             encoder!!.queueInputBuffer(idx, 0, data.size, data.pts, 0)
             inputs!![idx].clear()

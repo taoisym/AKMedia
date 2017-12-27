@@ -150,7 +150,7 @@ class MediaSource(private val startState: Int, private var endState: Int) : IMed
             for (i in 0 until extractor!!.trackCount) {
                 val format = extractor!!.getTrackFormat(i)
                 val mine = format.getString(MediaFormat.KEY_MIME)
-                val type = if (mine.startsWith("mVideo/")) 0 else if (mine.startsWith("audio/")) 1 else -1
+                val type = if (mine.startsWith("video/")) 0 else if (mine.startsWith("audio/")) 1 else -1
                 if (type == -1)
                     continue
 

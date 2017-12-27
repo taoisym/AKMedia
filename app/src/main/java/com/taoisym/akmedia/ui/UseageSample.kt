@@ -58,6 +58,7 @@ class UseageSample {
     fun start(ctx: Context) {
         if (mp4 != null)
             return
+        vg?.add(ctx)
         val muxer = MediaMuxer("/sdcard/cam.mp4", 1)
         val writer = MediaWriter(muxer)
         mp4 = FileTarget(writer)
@@ -70,10 +71,9 @@ class UseageSample {
     }
 
     fun stop() {
+        vg?.del()
         mp4?.let {
             vg?.delSink(it)
-            vg?.del()
-
         }
 
         mp4 = null

@@ -49,7 +49,7 @@ open class VideoSence(private val next: IMediaTarget<Unit, RealSurface>) :
     }
 
     fun setFilter(render: TextureRender) {
-        mEnv.postResource {
+        mEnv.postRender {
             render.prepare(mEnv)
             mFilterRender?.release(mEnv)
             mFilterRender = render

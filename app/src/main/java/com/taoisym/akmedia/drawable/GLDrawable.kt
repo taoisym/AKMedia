@@ -2,6 +2,7 @@ package com.taoisym.akmedia.drawable
 
 import android.opengl.GLES20
 import android.opengl.Matrix
+import android.util.Log
 import com.taoisym.akmedia.codec.VideoDir
 import com.taoisym.akmedia.layout.GLTransform
 import com.taoisym.akmedia.layout.Loc
@@ -41,16 +42,17 @@ abstract class GLDrawable(val oes: Boolean) : IGLNode {
         if (tex === null || tex.id <= 0)
             return
 
-
         var used = render
         if (used == null) {
-            used = if (oes) env.oes else env.tex
+            used = if (tex.type!=GLES20.GL_TEXTURE_2D) env.oes else env.tex
         }
         used.using(true)
         update(used, tr)
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLToolkit.checkError()
-        GLES20.glBindTexture(tex.type, tex.id)
+        tex.using(true)
+        Log.e("Tex",tex.toString())
+
         GLToolkit.checkError()
         GLES20.glUniformMatrix4fv(used.trShape, 1, false, mtxTex, 0)
         GLToolkit.checkError()
@@ -58,6 +60,7 @@ abstract class GLDrawable(val oes: Boolean) : IGLNode {
         GLToolkit.checkError()
         android.opengl.GLES20.glDrawArrays(android.opengl.GLES20.GL_TRIANGLE_STRIP, 0, 4)
         GLToolkit.checkError()
+        tex.using(false)
         used.using(false)
 
     }

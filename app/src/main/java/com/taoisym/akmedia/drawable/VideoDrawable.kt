@@ -3,6 +3,7 @@ package com.taoisym.akmedia.drawable
 import android.media.MediaMetadataRetriever
 import com.taoisym.akmedia.codec.AvcFileMeta
 import com.taoisym.akmedia.codec.SegmentFormat
+import com.taoisym.akmedia.codec.audio.AacPlayer
 import com.taoisym.akmedia.codec.avc.MediaDecoder
 import com.taoisym.akmedia.codec.avc.MediaSource
 import com.taoisym.akmedia.layout.GLTransform
@@ -25,7 +26,7 @@ class VideoDrawable(val uri: String, val custom: TextureRender) : ExternalDrawab
 
     override fun prepare(env: GLEnv) {
         super.prepare(env)
-        env.postResource {
+        env.postRender {
             val retriever = MediaMetadataRetriever()
             retriever.setDataSource(uri)
             val meta = AvcFileMeta(retriever)
@@ -36,10 +37,9 @@ class VideoDrawable(val uri: String, val custom: TextureRender) : ExternalDrawab
 
             val decoder = MediaSource(MediaSource.CONTINUE, MediaSource.CONTINUE)
             decoder.addSink(MediaDecoder(this), 0)
+            decoder.addSink(MediaDecoder(AacPlayer()), 1)
             decoder.emit(uri)
-            env.postRender {
-                mDecoder = decoder
-            }
+            mDecoder = decoder
         }
     }
 

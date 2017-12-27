@@ -30,7 +30,11 @@ public class GLTexture implements IGLNode {
 
     @Override
     public void using(boolean use) {
-        GLES20.glBindTexture(type, id);
+        if(use) {
+            GLES20.glBindTexture(type, id);
+        }else {
+            GLES20.glBindTexture(type, 0);
+        }
         GLToolkit.checkError();
     }
 
@@ -40,8 +44,12 @@ public class GLTexture implements IGLNode {
     }
 
     public void update(@NotNull Bitmap bmp) {
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, id);
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
+    }
+
+    @Override
+    public String toString() {
+        return "tex="+id+"/"+type;
     }
 }

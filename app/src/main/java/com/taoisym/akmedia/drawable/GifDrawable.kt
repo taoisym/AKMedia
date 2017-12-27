@@ -1,6 +1,7 @@
 package com.taoisym.akmedia.drawable
 
 import android.opengl.GLES20
+import android.util.Log
 import com.bumptech.glide.gifdecoder.StandardGifDecoder
 import com.bumptech.glide.load.resource.gif.GifBitmapProvider
 import com.taoisym.akmedia.layout.GLTransform
@@ -15,6 +16,10 @@ class GifDrawable(val uri: String, val bp: GifBitmapProvider) : GLDrawable(false
     private val mCache = ArrayList<GLTexture>()
     private var start = false
     private lateinit var stop: () -> Unit
+    private companion object {
+        val TAG="GIF"
+    }
+
     override fun prepare(env: GLEnv) {
         super.prepare(env)
         val decorer = StandardGifDecoder(bp)

@@ -2,6 +2,7 @@ package com.taoisym.akmedia.ui
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.opengl.GLES20
 import com.bumptech.glide.load.engine.bitmap_recycle.LruBitmapPool
 import com.bumptech.glide.load.resource.gif.GifBitmapProvider
 import com.taoisym.akmedia.R
@@ -38,13 +39,13 @@ class VideoSenceSample(next: IMediaTarget<Unit, RealSurface>) : VideoSence(next)
             var gif3: GifDrawable
 
 
-//            val render = TextureRender(true, true)
-//            render.apply {
-//                prepare(mEnv)
-//                video = VideoDrawable("/sdcard/girl.mp4", this)
-//                video?.locShape = Loc(Pos(0.0f, 0.0f), Pos(1f, 1f))
-//                video?.prepare(mEnv)
-//            }
+            val render = TextureRender(true, true)
+            render.apply {
+                prepare(mEnv)
+                video = VideoDrawable("/sdcard/girl.mp4", this)
+                video?.locShape = Loc(Pos(0.0f, 0.0f), Pos(1f, 1f))
+                video?.prepare(mEnv)
+            }
 
 
             val s1 = BitmapFactory.decodeResource(ctx.resources, R.raw.s1)
@@ -54,13 +55,13 @@ class VideoSenceSample(next: IMediaTarget<Unit, RealSurface>) : VideoSence(next)
             gif0 = GifDrawable("/sdcard/2.gif", mGbp)
             gif0.locShape = Loc(Pos(-1f, -0.5f), Pos(-0.5f, 0f))
             gif0.prepare(mEnv)
-            gif1 = GifDrawable("/sdcard/1.gif", mGbp)
+            gif1 = GifDrawable("/sdcard/3.gif", mGbp)
             gif1.locShape = Loc(Pos(-0.5f, -0.5f), Pos(0f, 0f))
             gif1.prepare(mEnv)
-            gif3 = GifDrawable("/sdcard/3.gif", mGbp)
+            gif3 = GifDrawable("/sdcard/1.gif", mGbp)
             gif3.locShape = Loc(Pos(-1f, -1f), Pos(-0.5f, -0.5f))
             gif3.prepare(mEnv)
-
+            GLES20.glFinish()
             mEnv.postRender {
                 mGif3 = gif3
                 mBmp0 = bmp0
@@ -73,7 +74,7 @@ class VideoSenceSample(next: IMediaTarget<Unit, RealSurface>) : VideoSence(next)
     }
 
     fun del() {
-        mEnv.postResource {
+        mEnv.postRender {
             mVideo?.release(mEnv)
             mBmp0?.release(mEnv)
             mBmp0?.release(mEnv)
